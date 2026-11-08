@@ -43,3 +43,15 @@
 .ad-placement-top{font:700 8px/1.5 'DM Sans',sans-serif;letter-spacing:.09em}
 .ad-placement-center{font:normal 30px/.98 Anton,Impact,sans-serif;letter-spacing:.025em;color:#9d6c86}
 .ad-placement-bottom{font:italic 11px/1.25 'Playfair Display',Georgia,serif;color:#927186}
+
+/* Strong, readable active state for the vintage navigation. */
+.tabs>a[aria-current="page"],.more.has-active>summary{
+ background:#94607d;color:#fff9fc;border-color:#71435e;
+ box-shadow:inset 1px 1px #ffffff30,0 2px 0 #6c4058;
+ font-weight:700;
+}
+.tabs>a[aria-current="page"]:hover,.more.has-active>summary:hover{background:#84536f}
+.tabs>a:hover:not([aria-current="page"]),.more:not(.has-active)>summary:hover{background:#f8e3eb}
+.more.has-active .chevron{border-color:#fff9fc}
+.dropdown a[aria-current="page"]{background:#94607d;color:#fff9fc;border-color:#71435e}
+.dropdown a[aria-current="page"]:hover{background:#84536f}
