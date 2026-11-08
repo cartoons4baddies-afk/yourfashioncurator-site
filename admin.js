@@ -3,10 +3,10 @@ const {db,CATS,esc,slug,renderBlocks,renderCover,cleanUrl}=YFC;
 const $=id=>document.getElementById(id);
 const msg=(v)=>{$('app-msg').textContent=v||''};
 const configured=!!db;
-let rows=[],currentId=null,blocks=[],coverUrl='',savedSettings={};
+let rows=[],currentId=null,blocks=[],coverUrl='',savedSettings={},productId=null;
 let cropX=50,cropY=50;
 const categoryOptions=CATS.map(([v,l])=>'<option value="'+v+'">'+esc(l)+'</option>').join('');$('post-category').innerHTML=categoryOptions;
-function pane(name){for(const p of ['posts','editor','settings'])$(p+'-pane').hidden=(p!==name);msg('')}
+function pane(name){for(const p of ['posts','editor','products','product-editor','settings'])$(p+'-pane').hidden=(p!==name);msg('')}
 if(!configured){$('auth-msg').textContent='Before using the editor, connect a Supabase project in config.js (see README).';$('login-form').querySelector('button').disabled=true;return;}
 async function checkEditor(){const {data:s}=await db.auth.getSession();if(!s.session){$('auth-box').hidden=false;$('workspace').hidden=true;return}
 const {data,error}=await db.from('editors').select('user_id').eq('user_id',s.session.user.id).maybeSingle();if(error||!data){$('auth-msg').textContent='This account is not authorized as an editor. Add your user ID to the editors table (see README).';await db.auth.signOut();$('auth-box').hidden=false;return;}
@@ -28,9 +28,75 @@ $('login-form').addEventListener('submit',async e=>{
 });
 $('logout').addEventListener('click',async()=>{await db.auth.signOut();location.reload()});
 $('posts-tab').addEventListener('click',async()=>{pane('posts');await loadPosts()});$('settings-tab').addEventListener('click',async()=>{pane('settings');await loadSettings()});
+$('products-tab').addEventListener('click',()=>{pane('products');renderProductList()});$('new-product').addEventListener('click',()=>openProductEditor(null));$('cancel-product').addEventListener('click',()=>{pane('products');renderProductList()});
 $('new-post').addEventListener('click',()=>openEditor(null));$('cancel-edit').addEventListener('click',()=>pane('posts'));
 async function loadPosts(){const {data,error}=await db.from('posts').select('*').order('updated_at',{ascending:false});if(error){msg(error.message);return;}rows=data||[];renderList()}
-function renderList(){$('admin-post-list').innerHTML=rows.length?rows.map(p=>'<div class="manager-item"><div><strong>'+esc(p.title||'Untitled')+'</strong><small>'+esc(CATS.find(c=>c[0]===p.category)?.[1]||'')+' / '+esc(p.status)+' / '+(p.featured?'PINNED / ':'')+new Date(p.updated_at).toLocaleDateString('en-GB')+'</small></div><div><button class="outline-btn" data-edit="'+p.id+'">EDIT</button></div></div>').join(''):'<div class="empty-journal"><h2>THE ARCHIVE IS EMPTY</h2><p>Create your first article when you are ready.</p></div>';document.querySelectorAll('[data-edit]').forEach(btn=>btn.onclick=()=>openEditor(rows.find(p=>p.id===btn.dataset.edit)))}
+function isAffiliateProduct(p){return Array.isArray(p?.blocks)&&p.blocks.some(b=>b.type==='affiliate-listing')}
+function renderList(){const articles=rows.filter(p=>!isAffiliateProduct(p));$('admin-post-list').innerHTML=articles.length?articles.map(p=>'<div class="manager-item"><div><strong>'+esc(p.title||'Untitled')+'</strong><small>'+esc(CATS.find(c=>c[0]===p.category)?.[1]||'')+' / '+esc(p.status)+' / '+(p.featured?'PINNED / ':'')+new Date(p.updated_at).toLocaleDateString('en-GB')+'</small></div><div><button class="outline-btn" data-edit="'+p.id+'">EDIT</button></div></div>').join(''):'<div class="empty-journal"><h2>THE ARCHIVE IS EMPTY</h2><p>Create your first article when you are ready.</p></div>';document.querySelectorAll('[data-edit]').forEach(btn=>btn.onclick=()=>openEditor(rows.find(p=>p.id===btn.dataset.edit)))}
+
+const productCategories=[['home','Home'],...CATS];
+$('product-categories').innerHTML=productCategories.map(([value,label])=>'<label class="affiliate-category-choice"><input type="checkbox" value="'+esc(value)+'" '+(value==='shop'?'checked':'')+'><span>'+esc(label)+'</span></label>').join('');
+function productData(p){return p?.blocks?.find(b=>b.type==='affiliate-listing')||null}
+function selectedProductCategories(){return Array.from($('product-categories').querySelectorAll('input:checked')).map(e=>e.value)}
+function renderProductList(){
+ const products=rows.filter(isAffiliateProduct);
+ $('admin-product-list').innerHTML=products.length?products.map(p=>{
+  const data=productData(p)||{};
+  const image=p.cover_url?'<img src="'+cleanUrl(p.cover_url)+'" alt="" loading="lazy">':'';
+  return '<div class="manager-item affiliate-manager-item">'+image+'<div><strong>'+esc(p.title)+'</strong><small>'+esc(p.status.toUpperCase())+' / '+esc((data.categories||['shop']).map(c=>productCategories.find(x=>x[0]===c)?.[1]||c).join(', '))+'</small></div><button type="button" class="outline-btn" data-edit-product="'+p.id+'">EDIT</button></div>';
+ }).join(''):'<div class="empty-journal"><h2>YOUR SHOPPING EDIT STARTS HERE</h2><p>Add a product photo, a clickable description and an affiliate link.</p></div>';
+ $('admin-product-list').querySelectorAll('[data-edit-product]').forEach(btn=>btn.onclick=()=>openProductEditor(rows.find(p=>p.id===btn.dataset.editProduct)));
+}
+function updateProductImage(){
+ const image=cleanUrl($('product-photo').value.trim());
+ $('product-image-preview').innerHTML=image?'<img src="'+image+'" alt="Product preview">':'';
+}
+$('product-photo').addEventListener('input',updateProductImage);
+function openProductEditor(p){
+ pane('product-editor');productId=p?.id||null;const data=productData(p)||{};
+ $('product-editor-heading').textContent=p?'EDIT AFFILIATE PRODUCT':'NEW AFFILIATE PRODUCT';
+ $('product-title').value=p?.title||'';
+ $('product-description').value=p?.excerpt||'';
+ $('product-photo').value=p?.cover_url||'';
+ $('product-link').value=data.linkUrl||'';
+ $('product-file').value='';
+ $('product-status').value=p?.status||'draft';
+ const selected=Array.isArray(data.categories)?data.categories:['shop'];
+ $('product-categories').querySelectorAll('input').forEach(input=>input.checked=selected.includes(input.value));
+ $('delete-product').hidden=!p;
+ updateProductImage();
+}
+$('product-file').addEventListener('change',async()=>{
+ const el=$('product-file'),file=el.files?.[0];if(!file)return;
+ el.disabled=true;msg('Uploading product photo…');
+ try{$('product-photo').value=await upload(file);updateProductImage();msg('Product photo uploaded.');el.value='';}
+ catch(error){msg('Upload failed: '+error.message)}
+ finally{el.disabled=false;}
+});
+$('product-form').addEventListener('submit',async e=>{
+ e.preventDefault();const button=$('save-product');button.disabled=true;msg('Saving product…');
+ try{
+  const title=$('product-title').value.trim(),description=$('product-description').value.trim(),photo=$('product-photo').value.trim(),linkUrl=$('product-link').value.trim(),categories=selectedProductCategories();
+  if(!title||!description||!photo||!linkUrl)throw Error('Add a product name, description, photo and affiliate link.');
+  if(!cleanUrl(photo)||!cleanUrl(linkUrl))throw Error('Please use valid http(s) URLs.');
+  if(!categories.length)throw Error('Choose at least one section.');
+  const prior=rows.find(p=>p.id===productId);
+  const slugInput=prior?.slug||'affiliate-product-'+slug(title).slice(0,60)+'-'+crypto.randomUUID().slice(0,8);
+  const status=$('product-status').value;
+  const row={title,slug:slugInput,excerpt:description,category:'shop',cover_url:photo,status,featured:false,blocks:[{type:'affiliate-listing',linkUrl,categories}],published_at:status==='published'?(prior?.published_at||new Date().toISOString()):null};
+  const op=productId?db.from('posts').update(row).eq('id',productId):db.from('posts').insert(row);
+  const {error}=await op;if(error)throw error;
+  msg('Affiliate product saved.');await loadPosts();pane('products');renderProductList();
+ }catch(error){msg('Could not save product: '+error.message)}
+ finally{button.disabled=false;}
+});
+$('delete-product').addEventListener('click',async()=>{
+ if(!productId||!confirm('Delete this affiliate product permanently?'))return;
+ const {error}=await db.from('posts').delete().eq('id',productId);
+ if(error){msg(error.message);return}
+ await loadPosts();pane('products');renderProductList();msg('Product deleted.');
+});
+
 function openEditor(p){pane('editor');currentId=p?.id||null;blocks=Array.isArray(p?.blocks)?structuredClone(p.blocks):[];
  // Ensure every photo has a stable anchor, including older articles.
  blocks.forEach((b,i)=>{if(b.type==='image'&&!b.uid)b.uid='image-'+crypto.randomUUID();});
