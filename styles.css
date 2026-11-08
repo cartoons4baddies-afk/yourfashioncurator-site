@@ -200,3 +200,36 @@
  .archive-stories>.story:nth-child(3n+1) img{aspect-ratio:4/3;height:auto}
  .archive-stories>.story .story-title{font-size:26px}
 }
+
+/* Stable editorial cover: image left and headline right on desktop/tablet.
+   Keep the source photograph untouched; crop only its front-page frame. */
+@media(min-width:581px){
+ .magazine-lead{
+  display:grid;
+  grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  align-items:center;
+  gap:clamp(14px,2.4vw,28px);
+ }
+ .magazine-lead-photo{
+  width:100%;
+  min-height:0;
+  aspect-ratio:4/5;
+ }
+ .magazine-lead-photo img{
+  display:block;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  min-height:0;
+  max-height:none;
+  object-fit:cover;
+ }
+ .magazine-lead-copy{min-width:0}
+ .magazine-lead-copy h1{font-size:clamp(31px,4.8vw,68px)}
+}
+@media(max-width:580px){
+ .magazine-lead{display:block}
+ .magazine-lead-photo{aspect-ratio:4/5;min-height:0;max-height:none}
+ .magazine-lead-photo img{width:100%;height:100%;min-height:0;max-height:none;object-fit:cover}
+}
