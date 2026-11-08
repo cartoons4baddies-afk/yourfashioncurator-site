@@ -113,7 +113,7 @@ if(validCategory==='home'){
  updateMetadata(TITLES[validCategory]||'The Journal','Explore '+(TITLES[validCategory]||'fashion')+' stories on Yourfashioncurator.');
  html+='<div class="cover-note"><div><span class="tiny">THE JOURNAL / '+esc(validCategory.toUpperCase())+'</span><h1>'+esc(TITLES[validCategory])+'</h1></div><span class="issue">The Edit</span></div>';
  html+=heading('THE ARTICLES',display.length?display.length+' STORIES':'THE FIRST ISSUE IS COMING');
- html+=display.length?'<div class="stories">'+display.map(card).join('')+'</div>':'<div class="empty-journal"><h2>NO STORIES YET.</h2><p>New fashion stories will appear here when published.</p></div>';
+ html+=display.length?'<div class="stories archive-stories category-stories">'+display.map(card).join('')+'</div>':'<div class="empty-journal"><h2>NO STORIES YET.</h2><p>New fashion stories will appear here when published.</p></div>';
 }
 list.innerHTML=html;
 })();
