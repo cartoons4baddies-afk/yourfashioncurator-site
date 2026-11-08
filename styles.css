@@ -238,7 +238,15 @@
 .article-content .article-diptych,.live-preview .article-diptych{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(10px,2vw,18px);align-items:start;width:100%;margin:26px 0 34px}
 .article-content .article-diptych .diptych-photo,.live-preview .article-diptych .diptych-photo{min-width:0;margin:0}
 .article-content .article-diptych .diptych-photo img,.live-preview .article-diptych .diptych-photo img{width:100%;height:auto;display:block;object-fit:contain}
-@media(max-width:480px){.article-content .article-diptych,.live-preview .article-diptych{grid-template-columns:1fr}}
+/* Keep the editorial diptych side-by-side on phones as well as desktop. */
+@media(max-width:640px){
+ .article-content .article-diptych,.live-preview .article-diptych{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+ }
+ .article-content .article-diptych .diptych-photo,
+ .live-preview .article-diptych .diptych-photo{min-width:0}
+}
 
 /* Monochrome editorial symbols: fixed vector shapes, never mobile emoji glyphs. */
 .editorial-arrow-icon,.editorial-star-icon{display:inline-block;vertical-align:-.14em;flex:none;color:inherit;fill:none}
