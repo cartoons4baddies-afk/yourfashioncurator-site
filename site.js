@@ -39,9 +39,14 @@ document.getElementById('social-links').innerHTML=links.join('')||'<span>LINKS C
 
 function date(x){return x?new Date(x).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):''}
 function articleHref(p){return '?section='+encodeURIComponent(p.category)+'&post='+encodeURIComponent(p.slug)}
+function coverPosition(p){
+ const crop=Array.isArray(p.blocks)?p.blocks.find(b=>b.type==='cover-crop'):null;
+ const clamp=v=>Math.max(0,Math.min(100,Number.isFinite(Number(v))?Number(v):50));
+ return clamp(crop?.x??50)+'% '+clamp(crop?.y??50)+'%';
+}
 function card(p){
  const href=articleHref(p),title=esc(p.title),category=esc(TITLES[p.category]||p.category);
- const picture=p.cover_url?'<img loading="lazy" src="'+cleanUrl(p.cover_url)+'" alt="'+title+'">':'<div class="story-no-photo" aria-hidden="true">YOURFASHIONCURATOR</div>';
+ const picture=p.cover_url?'<img loading="lazy" src="'+cleanUrl(p.cover_url)+'" alt="'+title+'" style="object-position:'+coverPosition(p)+'">':'<div class="story-no-photo" aria-hidden="true">YOURFASHIONCURATOR</div>';
  return '<a class="story" href="'+href+'">'+picture+'<div><div class="category">'+category+' / '+date(p.published_at)+'</div><h3 class="story-title">'+title+'</h3>'+(p.excerpt?'<p class="description">'+esc(p.excerpt)+'</p>':'')+'</div></a>';
 }
 function topLine(section=''){return '<div class="archive-top"><span>YOURFASHIONCURATOR / EST. 2026</span><span>'+esc(section||'INDEPENDENT FASHION JOURNAL')+'</span></div>'}
@@ -93,7 +98,7 @@ if(validCategory==='home'){
   html+='<section class="magazine-cover" aria-label="Featured fashion story">'+
    '<div class="magazine-cover-top"><span>THE FRONT PAGE</span><span>THE EDIT / '+new Date().getFullYear()+'</span></div>'+
    '<a class="magazine-lead" href="'+articleHref(lead)+'">'+
-   '<div class="magazine-lead-photo">'+(lead.cover_url?'<img src="'+cleanUrl(lead.cover_url)+'" alt="'+esc(lead.title)+'">':'<div class="magazine-no-cover" aria-hidden="true">YFC / EDITORIAL</div>')+'<span class="magazine-photo-stamp">01 / THE COVER</span></div>'+
+   '<div class="magazine-lead-photo">'+(lead.cover_url?'<img src="'+cleanUrl(lead.cover_url)+'" alt="'+esc(lead.title)+'" style="object-position:'+coverPosition(lead)+'">':'<div class="magazine-no-cover" aria-hidden="true">YFC / EDITORIAL</div>')+'<span class="magazine-photo-stamp">01 / THE COVER</span></div>'+
    '<div class="magazine-lead-copy"><span class="article-kicker">'+esc(TITLES[lead.category]||lead.category)+' / '+date(lead.published_at)+'</span>'+
    '<h1>'+esc(lead.title)+'</h1>'+(lead.excerpt?'<p>'+esc(lead.excerpt)+'</p>':'')+
    '<span class="magazine-read">READ THE STORY <span aria-hidden="true">↗</span></span></div></a></section>';
