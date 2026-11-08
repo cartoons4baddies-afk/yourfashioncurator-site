@@ -2,7 +2,7 @@
 const {db,TITLES,esc,renderBlocks,renderCover,cleanUrl}=YFC;
 const qs=new URLSearchParams(location.search);const category=qs.get('section')||'home';const postSlug=qs.get('post');const validCategory=Object.hasOwn(TITLES,category)?category:'home';
 document.body.className='theme-'+validCategory;
-const list=document.getElementById('main-content');document.querySelectorAll('[data-section]').forEach(a=>{if(a.dataset.section===validCategory)a.setAttribute('aria-current','page')});
+const list=document.getElementById('main-content');document.querySelectorAll('[data-section]').forEach(a=>{if(a.dataset.section===validCategory)a.setAttribute('aria-current','page')});const explore=document.querySelector('.more');if(explore&&explore.querySelector('[aria-current="page"]'))explore.classList.add('has-active');
 let settings={};let posts=[];
 if(db){
  const [s,p]=await Promise.all([db.from('site_settings').select('key,value'),db.from('posts').select('id,title,slug,excerpt,category,cover_url,blocks,featured,published_at,status').eq('status','published').order('published_at',{ascending:false})]);
