@@ -111,3 +111,22 @@
 .privacy-paper{min-height:0}
 .privacy-paper .article-content{max-width:730px}
 .privacy-paper .article-heading{margin-top:32px}
+
+/* Keep stickers anchored to the actual cover photograph, not empty letterbox space.
+   The same rules apply to the editor preview and published articles. */
+.article-cover-stage.photo-stage{
+ display:table;
+ width:auto;
+ max-width:100%;
+ margin:27px auto;
+}
+.article-cover-stage.photo-stage .article-cover{
+ display:block;
+ width:auto;
+ height:auto;
+ max-width:100%;
+ max-height:650px;
+ object-fit:contain;
+ margin:0;
+}
+.live-preview .article-cover-stage.photo-stage{margin:14px auto}
