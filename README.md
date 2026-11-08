@@ -13,7 +13,7 @@ This is a new, clean, deployable version of the V30 visual direction. No sample 
 
 ## First-time setup (one-off)
 1. Create a free/paid Supabase project at <https://supabase.com/dashboard>.
-2. Open Supabase **SQL Editor**, paste `supabase/schema.sql`, and run it *once* in a new project. Do not re-run against an existing schema without reviewing duplicate policies.
+2. Open Supabase **SQL Editor**, paste `schema.sql`, and run it *once* in a new project. Do not re-run against an existing schema without reviewing duplicate policies.
 3. In Supabase **Authentication → Users**, create your own login user (email and strong password). Keep that password private.
 4. Copy the user's UUID from Authentication → Users. In SQL Editor run:
    ```sql
@@ -24,7 +24,7 @@ This is a new, clean, deployable version of the V30 visual direction. No sample 
 7. Configure Supabase Authentication **Site URL** to the eventual website URL. Disable public self-sign-up if you don't want visitors to register. Only the user UUID added to `editors` can manage content.
 
 ## Publish with GitHub Pages
-1. Create a **new GitHub repository** (e.g. `yourfashioncurator-site`) and upload the *contents* of this directory, including `index.html`, `admin.html`, `config.js`, and `assets/` (not the enclosing folder).
+1. Create a **new GitHub repository** (e.g. `yourfashioncurator-site`) and upload the *contents* of this directory, including `index.html`, `admin.html`, `config.js`, and the image files (not the enclosing folder; images are currently at the repository root).
 2. In repository **Settings → Pages**, choose **Deploy from a branch**, select `main` and `/(root)`, then Save.
 3. Your public site becomes `https://YOUR-GITHUB-USERNAME.github.io/yourfashioncurator-site/`, and private editor is at `/admin.html` on the same site.
 4. Enter the full published URL in Supabase Authentication's **Site URL** field.
