@@ -54,13 +54,20 @@ function renderEditorBlocks(){
    '<label>Custom PNG / image (only for custom sticker)<input class="block-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label>'+
    '<label>Custom sticker URL<input data-field="url" type="url" value="'+esc(b.url||'')+'" placeholder="https://..."></label>';
  }else if(kind==='diptych'){
-  fields='<p class="hint">A structured two-photo spread. On mobile, photos stack for readability.</p>'+
+  fields='<p class="hint">A structured two-photo spread. Photos stay side by side on mobile.</p>'+
    '<label>Left photo<input class="diptych-file" data-side="leftUrl" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label>'+
    '<label>Left photo URL<input data-field="leftUrl" type="url" value="'+esc(b.leftUrl||'')+'" placeholder="https://..."></label>'+
    '<label>Left caption<input data-field="leftCaption" value="'+esc(b.leftCaption||'')+'"></label>'+
    '<label>Right photo<input class="diptych-file" data-side="rightUrl" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label>'+
    '<label>Right photo URL<input data-field="rightUrl" type="url" value="'+esc(b.rightUrl||'')+'" placeholder="https://..."></label>'+
    '<label>Right caption<input data-field="rightCaption" value="'+esc(b.rightCaption||'')+'"></label>';
+ }else if(kind==='affiliate'){
+   fields='<p class="hint">Upload a photo, add a clickable description and paste your affiliate URL.</p>'+
+    '<label>Product photo<input class="block-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label>'+
+    '<label>Photo URL<input data-field="url" type="url" value="'+esc(b.url||'')+'" placeholder="https://..."></label>'+
+    '<label>Clickable description<textarea data-field="description" rows="3" placeholder="Discover the Tara dress by DEME by Gabriella">'+esc(b.description||'')+'</textarea></label>'+
+    '<label>Affiliate link<input data-field="linkUrl" type="url" value="'+esc(b.linkUrl||'')+'" placeholder="https://www.awin1.com/cread.php?..."></label>'+
+    '<p class="hint">The description appears underlined and opens the affiliate link. The photo is also clickable. Disclose affiliate links in the article.</p>';
  }else if(kind==='divider'){
   fields='';
  }else{
@@ -132,7 +139,7 @@ document.querySelectorAll('[data-add]').forEach(btn=>btn.onclick=()=>{
   if(!image&&!coverUrl){msg('Add a cover photo or article photo first, then place tape on it.');return;}
   blocks.push({type:'sticker',stickerKind:'tape',anchor:image?.uid||'cover',x:80,y:9,scale:27,angle:-13,url:''});
  }else{
-  blocks.push(type==='diptych'?{type:'diptych',leftUrl:'',rightUrl:'',leftCaption:'',rightCaption:''}:{type,text:'',url:'',caption:'',align:'left',size:'normal',width:'wide',...(type==='image'?{uid:'image-'+crypto.randomUUID()}: {})});
+  blocks.push(type==='diptych'?{type:'diptych',leftUrl:'',rightUrl:'',leftCaption:'',rightCaption:''}:type==='affiliate'?{type:'affiliate',url:'',description:'',linkUrl:''}:{type,text:'',url:'',caption:'',align:'left',size:'normal',width:'wide',...(type==='image'?{uid:'image-'+crypto.randomUUID()}: {})});
  }
  renderEditorBlocks();updatePreview();msg('');
 });
