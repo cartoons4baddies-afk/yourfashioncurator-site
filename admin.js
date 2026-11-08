@@ -10,7 +10,21 @@ if(!configured){$('auth-msg').textContent='Before using the editor, connect a Su
 async function checkEditor(){const {data:s}=await db.auth.getSession();if(!s.session){$('auth-box').hidden=false;$('workspace').hidden=true;return}
 const {data,error}=await db.from('editors').select('user_id').eq('user_id',s.session.user.id).maybeSingle();if(error||!data){$('auth-msg').textContent='This account is not authorized as an editor. Add your user ID to the editors table (see README).';await db.auth.signOut();$('auth-box').hidden=false;return;}
 $('auth-box').hidden=true;$('workspace').hidden=false;$('logout').hidden=false;await loadPosts();}
-$('login-form').addEventListener('submit',async e=>{e.preventDefault();$('auth-msg').textContent='Signing in…';const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){$('auth-msg').textContent=error.message;return;}$('auth-msg').textContent='';await checkEditor()});
+$('login-form').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const status=$('auth-msg'),button=$('login-form').querySelector('button[type="submit"]');
+ status.textContent='Connecting to Supabase…';button.disabled=true;
+ try{
+  const result=await Promise.race([
+   db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value}),
+   new Promise((_,reject)=>setTimeout(()=>reject(new Error('Connection timed out. Check your internet connection, then reload the page.')),15000))
+  ]);
+  if(result.error){status.textContent='Sign in failed: '+result.error.message;return;}
+  status.textContent='Signed in. Checking editor access…';
+  await checkEditor();
+ }catch(error){status.textContent='Connection error: '+(error?.message||String(error));}
+ finally{button.disabled=false;}
+});
 $('logout').addEventListener('click',async()=>{await db.auth.signOut();location.reload()});
 $('posts-tab').addEventListener('click',async()=>{pane('posts');await loadPosts()});$('settings-tab').addEventListener('click',async()=>{pane('settings');await loadSettings()});
 $('new-post').addEventListener('click',()=>openEditor(null));$('cancel-edit').addEventListener('click',()=>pane('posts'));
@@ -27,5 +41,5 @@ $('post-form').addEventListener('submit',async e=>{e.preventDefault();msg('Savin
 $('delete-post').addEventListener('click',async()=>{if(!currentId||!confirm('Delete this article permanently?'))return;const {error}=await db.from('posts').delete().eq('id',currentId);if(error){msg(error.message);return;}await loadPosts();pane('posts')});
 async function loadSettings(){const {data,error}=await db.from('site_settings').select('key,value');if(error){msg(error.message);return;}savedSettings=Object.fromEntries((data||[]).map(r=>[r.key,r.value]));for(const key of ['intro','about','instagram','tiktok','email'])$('setting-'+key).value=savedSettings[key]||''}
 $('settings-form').addEventListener('submit',async e=>{e.preventDefault();const keys=['intro','about','instagram','tiktok','email'];let data=keys.map(key=>({key,value:$('setting-'+key).value.trim()}));const {error}=await db.from('site_settings').upsert(data,{onConflict:'key'});msg(error?'Unable to save settings: '+error.message:'Homepage settings saved.');});
-await checkEditor();
+try{await checkEditor();}catch(error){$('auth-msg').textContent='Could not check editor session: '+(error?.message||String(error));}
 })();
