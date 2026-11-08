@@ -42,6 +42,14 @@ function renderBlocks(blocks=[],options={}){
   }).join('');
   return '<div class="article-diptych">'+images+'</div>';
  }
+ if(kind==='affiliate'){
+  const src=cleanUrl(b.url),href=cleanUrl(b.linkUrl),description=esc(b.description||'').replace(/\n/g,'<br>');
+  if(!src&&!description)return '';
+  const image=src?'<img loading="lazy" src="'+src+'" alt="'+esc(b.description||'Featured product')+'">':'';
+  const photo=href&&image?'<a class="affiliate-photo-link" href="'+href+'" target="_blank" rel="sponsored nofollow noopener noreferrer" aria-label="View product">'+image+'</a>':image;
+  const caption=description?(href?'<a class="affiliate-description-link" href="'+href+'" target="_blank" rel="sponsored nofollow noopener noreferrer">'+description+'</a>':'<span class="affiliate-description-link">'+description+'</span>'):'';
+  return '<figure class="article-affiliate">'+photo+(caption?'<figcaption>'+caption+'</figcaption>':'')+'</figure>';
+ }
  if(kind==='image'){
   const src=cleanUrl(b.url);if(!src)return '';
   const width=['narrow','wide','full'].includes(b.width)?b.width:'wide';
