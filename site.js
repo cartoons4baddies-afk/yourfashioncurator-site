@@ -36,19 +36,68 @@ for(const [key,label] of [['instagram','INSTAGRAM'],['tiktok','TIKTOK']]){
  links.push('<a target="_blank" rel="noopener noreferrer" href="'+url+'"><span>'+label+':</span>'+(username?' <span class="link-detail">'+esc(username)+'</span>':'')+'</a>');
 }
 document.getElementById('social-links').innerHTML=links.join('')||'<span>LINKS COMING SOON</span>';
+
 function date(x){return x?new Date(x).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):''}
-function card(p){return '<a class="story" href="?section='+encodeURIComponent(p.category)+'&post='+encodeURIComponent(p.slug)+'">'+(p.cover_url?'<img loading="lazy" src="'+cleanUrl(p.cover_url)+'" alt="">':'')+'<div><div class="category">'+esc(TITLES[p.category]||p.category)+' / '+date(p.published_at)+'</div><h3 class="story-title">'+esc(p.title)+'</h3>'+(p.excerpt?'<p class="description">'+esc(p.excerpt)+'</p>':'')+'</div></a>'}
+function articleHref(p){return '?section='+encodeURIComponent(p.category)+'&post='+encodeURIComponent(p.slug)}
+function card(p){
+ const href=articleHref(p),title=esc(p.title),category=esc(TITLES[p.category]||p.category);
+ const picture=p.cover_url?'<img loading="lazy" src="'+cleanUrl(p.cover_url)+'" alt="'+title+'">':'<div class="story-no-photo" aria-hidden="true">YOURFASHIONCURATOR</div>';
+ return '<a class="story" href="'+href+'">'+picture+'<div><div class="category">'+category+' / '+date(p.published_at)+'</div><h3 class="story-title">'+title+'</h3>'+(p.excerpt?'<p class="description">'+esc(p.excerpt)+'</p>':'')+'</div></a>';
+}
 function topLine(section=''){return '<div class="archive-top"><span>YOURFASHIONCURATOR / EST. 2026</span><span>'+esc(section||'INDEPENDENT FASHION JOURNAL')+'</span></div>'}
 function heading(label,caption){return '<div class="section-head"><h2>'+esc(label)+'</h2><small>'+esc(caption)+'</small></div>'}
-if(postSlug){const p=posts.find(x=>x.slug===postSlug);if(!p){list.innerHTML=topLine()+'<div class="empty-journal"><h2>STORY NOT FOUND</h2><p>This article may not be published yet.</p></div>';return;}
- document.body.className='theme-'+(TITLES[p.category]?p.category:'home');document.title=p.title+' — Yourfashioncurator';
- list.innerHTML=topLine(TITLES[p.category])+ '<div style="margin-top:24px"><a class="article-back" href="?section='+encodeURIComponent(p.category)+'">← '+esc(TITLES[p.category]||'ALL ARTICLES')+'</a><div class="article-kicker" style="margin-top:35px">'+esc(TITLES[p.category]||'')+' / '+date(p.published_at)+'</div><h1 class="article-title">'+esc(p.title)+'</h1>'+(p.excerpt?'<p class="article-summary">'+esc(p.excerpt)+'</p>':'')+renderCover(p.cover_url,p.blocks)+'<div class="article-content">'+renderBlocks(p.blocks)+'</div></div>';return;
+function updateMetadata(title,description){
+ document.title=title+' — Yourfashioncurator';
+ const meta=document.querySelector('meta[name="description"]');
+ if(meta)meta.content=String(description||'An independent fashion journal exploring fashion archives, beauty and collections.').slice(0,160);
 }
-let display=validCategory==='home'?posts:posts.filter(p=>p.category===validCategory);
-const fixedIntro=String(settings.intro||'').trim();let html=topLine(validCategory==='home'?'THE FRONT PAGE':TITLES[validCategory]);
-if(validCategory==='home' && fixedIntro){html+='<div class="cover-note"><div><span class="tiny">EDITORIAL NOTE</span><p>'+esc(fixedIntro)+'</p></div></div>';}else if(validCategory!=='home'){html+='<div class="cover-note"><div><span class="tiny">THE JOURNAL / '+esc(validCategory.toUpperCase())+'</span><h1>'+esc(TITLES[validCategory])+'</h1></div><span class="issue">The Edit</span></div>';}
-const featured=validCategory==='home'?display.filter(p=>p.featured):[];if(featured.length)html+=heading('ON THE COVER','EDITOR\'S SELECTION')+'<div class="stories">'+featured.map(card).join('')+'</div>';
-html+=heading(validCategory==='home'?'RECENTLY PUBLISHED':'THE ARTICLES',display.length?display.length+' STORIES':'THE FIRST ISSUE IS COMING');
-html+=display.length?'<div class="stories">'+display.map(card).join('')+'</div>':'<div class="empty-journal"><h2>NO STORIES YET.</h2><p>New fashion stories will appear here when published.</p></div>';
+const featuredPosts=posts.filter(p=>p.featured);
+const pinnedWidget=document.getElementById('pinned-widget');
+const pinnedList=document.getElementById('pinned-list');
+if(pinnedWidget&&pinnedList&&featuredPosts.length){
+ pinnedList.innerHTML=featuredPosts.slice(0,3).map(p=>'<a class="pinned-story" href="'+articleHref(p)+'"><small>'+esc(TITLES[p.category]||p.category)+'</small><span>'+esc(p.title)+'</span></a>').join('');
+ pinnedWidget.hidden=false;
+}
+if(postSlug){
+ const p=posts.find(x=>x.slug===postSlug);
+ if(!p){list.innerHTML=topLine()+'<div class="empty-journal"><h2>STORY NOT FOUND</h2><p>This article may not be published yet.</p></div>';return;}
+ document.body.className='theme-'+(TITLES[p.category]?p.category:'home');
+ updateMetadata(p.title,p.excerpt||'Fashion editorial by Yourfashioncurator');
+ list.innerHTML=topLine(TITLES[p.category])+
+ '<article class="full-article"><a class="article-back" href="?section='+encodeURIComponent(p.category)+'">← '+esc(TITLES[p.category]||'ALL ARTICLES')+'</a>'+
+ '<div class="article-kicker">'+esc(TITLES[p.category]||'')+' / '+date(p.published_at)+'</div><h1 class="article-title">'+esc(p.title)+'</h1>'+
+ (p.excerpt?'<p class="article-summary">'+esc(p.excerpt)+'</p>':'')+
+ renderCover(p.cover_url,p.blocks)+'<div class="article-content">'+renderBlocks(p.blocks)+'</div></article>';
+ return;
+}
+const display=validCategory==='home'?posts:posts.filter(p=>p.category===validCategory);
+const fixedIntro=String(settings.intro||'').trim();
+let html=topLine(validCategory==='home'?'THE FRONT PAGE':TITLES[validCategory]);
+if(validCategory==='home'){
+ updateMetadata('Independent Fashion Journal','Fashion archives, predictions, beauty, brand discoveries and collections worth remembering.');
+ if(display.length){
+  const lead=featuredPosts[0]||display[0];
+  const secondary=featuredPosts.filter(p=>p.id!==lead.id).slice(0,2);
+  const remaining=display.filter(p=>p.id!==lead.id&&!secondary.some(x=>x.id===p.id));
+  html+='<section class="magazine-cover" aria-label="Featured fashion story">'+
+   '<div class="magazine-cover-top"><span>THE FRONT PAGE</span><span>THE EDIT / '+new Date().getFullYear()+'</span></div>'+
+   '<a class="magazine-lead" href="'+articleHref(lead)+'">'+
+   '<div class="magazine-lead-photo">'+(lead.cover_url?'<img src="'+cleanUrl(lead.cover_url)+'" alt="'+esc(lead.title)+'">':'<div class="magazine-no-cover" aria-hidden="true">YFC / EDITORIAL</div>')+'<span class="magazine-photo-stamp">01 / THE COVER</span></div>'+
+   '<div class="magazine-lead-copy"><span class="article-kicker">'+esc(TITLES[lead.category]||lead.category)+' / '+date(lead.published_at)+'</span>'+
+   '<h1>'+esc(lead.title)+'</h1>'+(lead.excerpt?'<p>'+esc(lead.excerpt)+'</p>':'')+
+   '<span class="magazine-read">READ THE STORY <span aria-hidden="true">↗</span></span></div></a></section>';
+  if(fixedIntro)html+='<section class="editorial-letter"><div class="editorial-letter-heading">A NOTE FROM THE EDITOR <span>✳</span></div><p>'+esc(fixedIntro)+'</p></section>';
+  if(secondary.length)html+=heading('EDITOR’S SELECTION','FEATURED STORIES')+'<div class="stories">'+secondary.map(card).join('')+'</div>';
+  if(remaining.length)html+=heading('FRESH FROM THE ARCHIVE',remaining.length+' MORE TO READ')+'<div class="stories">'+remaining.map(card).join('')+'</div>';
+ }else{
+  if(fixedIntro)html+='<section class="editorial-letter"><div class="editorial-letter-heading">A NOTE FROM THE EDITOR</div><p>'+esc(fixedIntro)+'</p></section>';
+  html+='<div class="empty-journal"><h2>THE FIRST ISSUE IS COMING.</h2><p>New fashion stories will appear here when published.</p></div>';
+ }
+}else{
+ updateMetadata(TITLES[validCategory]||'The Journal','Explore '+(TITLES[validCategory]||'fashion')+' stories on Yourfashioncurator.');
+ html+='<div class="cover-note"><div><span class="tiny">THE JOURNAL / '+esc(validCategory.toUpperCase())+'</span><h1>'+esc(TITLES[validCategory])+'</h1></div><span class="issue">The Edit</span></div>';
+ html+=heading('THE ARTICLES',display.length?display.length+' STORIES':'THE FIRST ISSUE IS COMING');
+ html+=display.length?'<div class="stories">'+display.map(card).join('')+'</div>':'<div class="empty-journal"><h2>NO STORIES YET.</h2><p>New fashion stories will appear here when published.</p></div>';
+}
 list.innerHTML=html;
 })();
