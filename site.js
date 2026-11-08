@@ -104,7 +104,7 @@ if(validCategory==='home'){
    '<span class="magazine-read">READ THE STORY <span aria-hidden="true">↗</span></span></div></a></section>';
   if(fixedIntro)html+='<section class="editorial-letter"><div class="editorial-letter-heading">A NOTE FROM THE EDITOR <span>✳</span></div><p>'+esc(fixedIntro)+'</p></section>';
   if(secondary.length)html+=heading('EDITOR’S SELECTION','FEATURED STORIES')+'<div class="stories">'+secondary.map(card).join('')+'</div>';
-  if(remaining.length)html+=heading('FRESH FROM THE ARCHIVE',remaining.length+' MORE TO READ')+'<div class="stories">'+remaining.map(card).join('')+'</div>';
+  if(remaining.length)html+=heading('FRESH FROM THE ARCHIVE',remaining.length+' MORE TO READ')+'<div class="stories archive-stories">'+remaining.map(card).join('')+'</div>';
  }else{
   if(fixedIntro)html+='<section class="editorial-letter"><div class="editorial-letter-heading">A NOTE FROM THE EDITOR</div><p>'+esc(fixedIntro)+'</p></section>';
   html+='<div class="empty-journal"><h2>THE FIRST ISSUE IS COMING.</h2><p>New fashion stories will appear here when published.</p></div>';
