@@ -3,11 +3,11 @@ const {db,TITLES,esc,renderBlocks,renderCover,cleanUrl}=YFC;
 const qs=new URLSearchParams(location.search);const category=qs.get('section')||'home';const postSlug=qs.get('post');const validCategory=Object.hasOwn(TITLES,category)?category:'home';
 document.body.className='theme-'+validCategory;
 const list=document.getElementById('main-content');document.querySelectorAll('[data-section]').forEach(a=>{if(a.dataset.section===validCategory)a.setAttribute('aria-current','page')});const explore=document.querySelector('.more');if(explore&&explore.querySelector('[aria-current="page"]'))explore.classList.add('has-active');
-let settings={};let posts=[];
+let settings={};let posts=[];let products=[];
 if(db){
  const [s,p]=await Promise.all([db.from('site_settings').select('key,value'),db.from('posts').select('id,title,slug,excerpt,category,cover_url,blocks,featured,published_at,status').eq('status','published').order('published_at',{ascending:false})]);
  if(s.error||p.error){list.innerHTML='<div class="error-msg">The journal could not load right now. Please try again later.</div>';return;}
- settings=Object.fromEntries(s.data.map(r=>[r.key,r.value]));posts=p.data||[];
+ settings=Object.fromEntries(s.data.map(r=>[r.key,r.value]));const all=p.data||[];products=all.filter(x=>Array.isArray(x.blocks)&&x.blocks.some(b=>b.type==='affiliate-listing'));posts=all.filter(x=>!products.includes(x));
 }
 const about=String(settings.about||'').trim();const aboutEl=document.getElementById('about-text');if(about){aboutEl.textContent=about;aboutEl.classList.remove('hidden')}
 const email=String(settings.email||'').trim();
@@ -49,6 +49,24 @@ function card(p){
  const picture=p.cover_url?'<img loading="lazy" src="'+cleanUrl(p.cover_url)+'" alt="'+title+'" style="object-position:'+coverPosition(p)+'">':'<div class="story-no-photo" aria-hidden="true">YOURFASHIONCURATOR</div>';
  return '<a class="story" href="'+href+'">'+picture+'<div><div class="category">'+category+' / '+date(p.published_at)+'</div><h3 class="story-title">'+title+'</h3>'+(p.excerpt?'<p class="description">'+esc(p.excerpt)+'</p>':'')+'</div></a>';
 }
+function productDetails(p){return Array.isArray(p.blocks)?p.blocks.find(b=>b.type==='affiliate-listing')||{}:{}}
+function productCard(p){
+ const data=productDetails(p),url=cleanUrl(data.linkUrl),image=cleanUrl(p.cover_url),description=esc(p.excerpt||p.title);
+ if(!url||!image)return '';
+ return '<figure class="shop-product">'+
+ '<a class="shop-product-photo" href="'+url+'" target="_blank" rel="sponsored nofollow noopener noreferrer" aria-label="Shop '+esc(p.title)+'"><img loading="lazy" src="'+image+'" alt="'+esc(p.title)+'"></a>'+
+ '<figcaption><a href="'+url+'" target="_blank" rel="sponsored nofollow noopener noreferrer">'+description+'</a></figcaption></figure>';
+}
+function productsIn(section){return products.filter(p=>{
+ const cats=productDetails(p).categories;
+ return Array.isArray(cats)?cats.includes(section):section==='shop';
+});}
+function productGallery(items){
+ const cards=items.map(productCard).filter(Boolean);if(!cards.length)return '';
+ return '<section class="shop-products-section" aria-label="Curated affiliate shopping">'+heading('THE CURATOR SHOPPING EDIT','SHOP DIRECTLY FROM THE EDIT')+
+ '<div class="shop-products-grid">'+cards.join('')+'</div>'+
+ '<p class="affiliate-disclosure">Some shopping links are affiliate links. Yourfashioncurator may earn a commission on qualifying purchases, at no additional cost to you.</p></section>';
+}
 function topLine(section=''){return '<div class="archive-top"><span>YOURFASHIONCURATOR / EST. 2026</span><span>'+esc(section||'INDEPENDENT FASHION JOURNAL')+'</span></div>'}
 function heading(label,caption){return '<div class="section-head"><h2>'+esc(label)+'</h2><small>'+esc(caption)+'</small></div>'}
 function updateMetadata(title,description,image){
@@ -87,6 +105,7 @@ if(postSlug){
  return;
 }
 const display=validCategory==='home'?posts:posts.filter(p=>p.category===validCategory);
+const visibleProducts=productsIn(validCategory);
 const fixedIntro=String(settings.intro||'').trim();
 let html=topLine(validCategory==='home'?'THE FRONT PAGE':TITLES[validCategory]);
 if(validCategory==='home'){
@@ -105,15 +124,18 @@ if(validCategory==='home'){
   if(fixedIntro)html+='<section class="editorial-letter"><div class="editorial-letter-heading">A NOTE FROM THE EDITOR <svg class="editorial-star-icon" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M12 1.7v20.6M1.7 12h20.6M4.7 4.7l14.6 14.6M19.3 4.7 4.7 19.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="square"/></svg></div><p>'+esc(fixedIntro)+'</p></section>';
   if(secondary.length)html+=heading('EDITOR’S SELECTION','FEATURED STORIES')+'<div class="stories">'+secondary.map(card).join('')+'</div>';
   if(remaining.length)html+=heading('FRESH FROM THE ARCHIVE',remaining.length+' MORE TO READ')+'<div class="stories archive-stories">'+remaining.map(card).join('')+'</div>';
+  html+=productGallery(visibleProducts);
  }else{
   if(fixedIntro)html+='<section class="editorial-letter"><div class="editorial-letter-heading">A NOTE FROM THE EDITOR</div><p>'+esc(fixedIntro)+'</p></section>';
-  html+='<div class="empty-journal"><h2>THE FIRST ISSUE IS COMING.</h2><p>New fashion stories will appear here when published.</p></div>';
+  html+=productGallery(visibleProducts);
+  if(!visibleProducts.length)html+='<div class="empty-journal"><h2>THE FIRST ISSUE IS COMING.</h2><p>New fashion stories will appear here when published.</p></div>'; 
  }
 }else{
  updateMetadata(TITLES[validCategory]||'The Journal','Explore '+(TITLES[validCategory]||'fashion')+' stories on Yourfashioncurator.');
  html+='<div class="cover-note"><div><span class="tiny">THE JOURNAL / '+esc(validCategory.toUpperCase())+'</span><h1>'+esc(TITLES[validCategory])+'</h1></div><span class="issue">The Edit</span></div>';
- html+=heading('THE ARTICLES',display.length?display.length+' STORIES':'THE FIRST ISSUE IS COMING');
- html+=display.length?'<div class="stories archive-stories category-stories">'+display.map(card).join('')+'</div>':'<div class="empty-journal"><h2>NO STORIES YET.</h2><p>New fashion stories will appear here when published.</p></div>';
+ html+=productGallery(visibleProducts);
+ if(display.length){html+=heading('THE ARTICLES',display.length+' STORIES')+'<div class="stories archive-stories category-stories">'+display.map(card).join('')+'</div>';}
+ else if(!visibleProducts.length){html+='<div class="empty-journal"><h2>NO STORIES YET.</h2><p>New fashion stories will appear here when published.</p></div>';} 
 }
 list.innerHTML=html;
 })();
