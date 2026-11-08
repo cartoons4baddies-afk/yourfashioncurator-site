@@ -51,6 +51,14 @@ function renderEditorBlocks(){
    '<div class="block-options"><label>Size (%)<input type="number" min="10" max="65" data-field="scale" value="'+esc(b.scale??27)+'"></label><label>Rotation (°)<input type="number" min="-180" max="180" data-field="angle" value="'+esc(b.angle??-13)+'"></label></div>'+
    '<label>Custom PNG / image (only for custom sticker)<input class="block-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label>'+
    '<label>Custom sticker URL<input data-field="url" type="url" value="'+esc(b.url||'')+'" placeholder="https://..."></label>';
+ }else if(kind==='diptych'){
+  fields='<p class="hint">A structured two-photo spread. On mobile, photos stack for readability.</p>'+
+   '<label>Left photo<input class="diptych-file" data-side="leftUrl" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label>'+
+   '<label>Left photo URL<input data-field="leftUrl" type="url" value="'+esc(b.leftUrl||'')+'" placeholder="https://..."></label>'+
+   '<label>Left caption<input data-field="leftCaption" value="'+esc(b.leftCaption||'')+'"></label>'+
+   '<label>Right photo<input class="diptych-file" data-side="rightUrl" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label>'+
+   '<label>Right photo URL<input data-field="rightUrl" type="url" value="'+esc(b.rightUrl||'')+'" placeholder="https://..."></label>'+
+   '<label>Right caption<input data-field="rightCaption" value="'+esc(b.rightCaption||'')+'"></label>';
  }else if(kind==='divider'){
   fields='';
  }else{
@@ -75,6 +83,12 @@ function renderEditorBlocks(){
    [blocks[i],blocks[next]]=[blocks[next],blocks[i]];
    renderEditorBlocks();updatePreview();
   };
+  el.querySelectorAll('.diptych-file').forEach(input=>input.onchange=async()=>{
+   const file=input.files?.[0];if(!file)return;
+   input.disabled=true;msg('Uploading photo…');
+   try{blocks[i][input.dataset.side]=await upload(file);msg('Photo uploaded.');renderEditorBlocks();updatePreview();}
+   catch(e){msg('Upload failed: '+e.message);input.disabled=false;}
+  });
   const fi=el.querySelector('.block-file');
   if(fi)fi.onchange=async()=>{
    const file=fi.files?.[0];if(!file)return;
@@ -99,7 +113,7 @@ document.querySelectorAll('[data-add]').forEach(btn=>btn.onclick=()=>{
   if(!image&&!coverUrl){msg('Add a cover photo or article photo first, then place tape on it.');return;}
   blocks.push({type:'sticker',stickerKind:'tape',anchor:image?.uid||'cover',x:80,y:9,scale:27,angle:-13,url:''});
  }else{
-  blocks.push({type,text:'',url:'',caption:'',align:'left',size:'normal',width:'wide',...(type==='image'?{uid:'image-'+crypto.randomUUID()}: {})});
+  blocks.push(type==='diptych'?{type:'diptych',leftUrl:'',rightUrl:'',leftCaption:'',rightCaption:''}:{type,text:'',url:'',caption:'',align:'left',size:'normal',width:'wide',...(type==='image'?{uid:'image-'+crypto.randomUUID()}: {})});
  }
  renderEditorBlocks();updatePreview();msg('');
 });
