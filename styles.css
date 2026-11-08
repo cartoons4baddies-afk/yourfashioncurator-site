@@ -30,3 +30,8 @@
 .live-preview .sticker-draggable:active{cursor:grabbing}
 .live-preview .article-photo-stage>img{width:100%}
 .live-preview .article-cover-stage{margin:14px 0}
+
+/* Make profile usernames and email visibly clickable. */
+.widget-body a,.widget-link{overflow-wrap:anywhere;text-decoration:none}
+.widget-body a .link-detail,.widget-link .link-detail{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;overflow-wrap:anywhere}
+.widget-body a:hover,.widget-link:hover{background:#fce5ef}
