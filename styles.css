@@ -35,3 +35,11 @@
 .widget-body a,.widget-link{overflow-wrap:anywhere;text-decoration:none}
 .widget-body a .link-detail,.widget-link .link-detail{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;overflow-wrap:anywhere}
 .widget-body a:hover,.widget-link:hover{background:#fce5ef}
+
+/* Reserved ad slot: a visible placeholder, no ad network or trackers connected. */
+.ad-widget{min-width:0}
+.ad-widget h2{font-size:17px;letter-spacing:.035em}
+.ad-placement{min-height:176px;padding:12px 9px;border:1px dashed #b889a1;background:#f8e4ec;display:flex;flex-direction:column;justify-content:space-between;align-items:center;text-align:center;color:#674359}
+.ad-placement-top{font:700 8px/1.5 'DM Sans',sans-serif;letter-spacing:.09em}
+.ad-placement-center{font:normal 30px/.98 Anton,Impact,sans-serif;letter-spacing:.025em;color:#9d6c86}
+.ad-placement-bottom{font:italic 11px/1.25 'Playfair Display',Georgia,serif;color:#927186}
