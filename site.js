@@ -10,8 +10,32 @@ if(db){
  settings=Object.fromEntries(s.data.map(r=>[r.key,r.value]));posts=p.data||[];
 }
 const about=String(settings.about||'').trim();const aboutEl=document.getElementById('about-text');if(about){aboutEl.textContent=about;aboutEl.classList.remove('hidden')}
-const email=String(settings.email||'').trim();if(/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){const link=document.getElementById('contact-link');link.href='mailto:'+encodeURIComponent(email);link.hidden=false;}
-const links=[];for(const [key,label] of [['instagram','INSTAGRAM'],['tiktok','TIKTOK']]){const url=cleanUrl(settings[key]);if(url)links.push('<a target="_blank" rel="noopener noreferrer" href="'+url+'">'+label+'</a>')};document.getElementById('social-links').innerHTML=links.join('')||'<span>LINKS COMING SOON</span>';
+const email=String(settings.email||'').trim();
+if(/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
+ const link=document.getElementById('contact-link');
+ link.href='mailto:'+encodeURIComponent(email);
+ link.innerHTML='<span>EMAIL:</span> <span class="link-detail">'+esc(email)+'</span>';
+ link.hidden=false;
+}
+function profileUsername(value,platform){
+ try{
+  const u=new URL(value),host=u.hostname.toLowerCase().replace(/^www\./,'');
+  const accepted=platform==='instagram'?['instagram.com']:['tiktok.com'];
+  if(!accepted.includes(host))return '';
+  const part=decodeURIComponent(u.pathname.split('/').filter(Boolean)[0]||'').replace(/^@/,'');
+  if(!part || ['p','reel','reels','stories','explore','share','login','accounts','video','tag'].includes(part.toLowerCase()))return '';
+  return '@'+part;
+ }catch{return '';}
+}
+const links=[];
+for(const [key,label] of [['instagram','INSTAGRAM'],['tiktok','TIKTOK']]){
+ const original=String(settings[key]||'').trim();
+ const url=cleanUrl(original);
+ if(!url)continue;
+ const username=profileUsername(original,key);
+ links.push('<a target="_blank" rel="noopener noreferrer" href="'+url+'"><span>'+label+':</span>'+(username?' <span class="link-detail">'+esc(username)+'</span>':'')+'</a>');
+}
+document.getElementById('social-links').innerHTML=links.join('')||'<span>LINKS COMING SOON</span>';
 function date(x){return x?new Date(x).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):''}
 function card(p){return '<a class="story" href="?section='+encodeURIComponent(p.category)+'&post='+encodeURIComponent(p.slug)+'">'+(p.cover_url?'<img loading="lazy" src="'+cleanUrl(p.cover_url)+'" alt="">':'')+'<div><div class="category">'+esc(TITLES[p.category]||p.category)+' / '+date(p.published_at)+'</div><h3 class="story-title">'+esc(p.title)+'</h3>'+(p.excerpt?'<p class="description">'+esc(p.excerpt)+'</p>':'')+'</div></a>'}
 function topLine(section=''){return '<div class="archive-top"><span>YOURFASHIONCURATOR / EST. 2026</span><span>'+esc(section||'INDEPENDENT FASHION JOURNAL')+'</span></div>'}
