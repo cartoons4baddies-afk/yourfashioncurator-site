@@ -105,3 +105,9 @@
  .archive-top{font-size:8px;letter-spacing:.08em}
  .article-diptych{grid-template-columns:1fr;gap:22px}
 }
+
+/* Keep the standalone privacy page aligned with the magazine's central column. */
+.privacy-center{grid-column:1/-1;justify-self:center;width:min(960px,100%)}
+.privacy-paper{min-height:0}
+.privacy-paper .article-content{max-width:730px}
+.privacy-paper .article-heading{margin-top:32px}
