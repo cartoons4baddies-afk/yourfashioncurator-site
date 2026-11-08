@@ -35,6 +35,13 @@ function renderBlocks(blocks=[],options={}){
  if(kind==='quote')return '<blockquote class="article-quote" style="'+style+'">'+text+'</blockquote>';
  if(kind==='divider')return '<div class="article-divider"></div>';
  if(kind==='sticker')return '';
+ if(kind==='diptych'){
+  const images=[['left',b.leftUrl,b.leftCaption],['right',b.rightUrl,b.rightCaption]].map(([side,url,caption])=>{
+   const src=cleanUrl(url);if(!src)return '<div class="diptych-empty" aria-hidden="true"></div>';
+   return '<figure class="diptych-photo"><img loading="lazy" src="'+src+'" alt="'+esc(caption||'')+'">'+(caption?'<figcaption>'+esc(caption)+'</figcaption>':'')+'</figure>';
+  }).join('');
+  return '<div class="article-diptych">'+images+'</div>';
+ }
  if(kind==='image'){
   const src=cleanUrl(b.url);if(!src)return '';
   const width=['narrow','wide','full'].includes(b.width)?b.width:'wide';
