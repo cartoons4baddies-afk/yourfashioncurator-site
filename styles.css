@@ -262,3 +262,25 @@
 .article-affiliate .affiliate-description-link{color:inherit;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px;overflow-wrap:anywhere}
 .article-affiliate a.affiliate-description-link:hover{color:#a44378}
 @media(max-width:640px){.article-affiliate figcaption{font-size:16px;max-width:96%}}
+
+/* Direct affiliate-product gallery (not article cards). */
+.shop-products-section{margin:27px 0 40px}
+.shop-products-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:clamp(12px,2.5vw,24px);row-gap:32px;align-items:start}
+.shop-product{min-width:0;margin:0}
+.shop-product-photo{display:block;aspect-ratio:3/4;background:#f4e6ec;overflow:hidden}
+.shop-product-photo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .22s}
+.shop-product-photo:hover img{transform:scale(1.025)}
+.shop-product figcaption{margin:10px 0 0;font:italic clamp(14px,1.6vw,19px)/1.5 'Playfair Display',Georgia,serif;text-align:center}
+.shop-product figcaption a{color:inherit;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px;overflow-wrap:anywhere}
+.shop-product figcaption a:hover{color:#a44378}
+.affiliate-disclosure{margin:22px 0 0;font:11px/1.6 'DM Sans',sans-serif;opacity:.75}
+.affiliate-product-form{max-width:710px;margin:16px 0 40px}
+.affiliate-category-field{border:1px solid #d7b6c6;padding:18px;margin:12px 0}
+.affiliate-category-field legend{font-weight:700;font-size:12px;letter-spacing:.04em;padding:0 6px}
+.affiliate-category-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 15px}
+.affiliate-category-choice{display:flex!important;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.affiliate-category-choice input{width:auto!important;flex:none}
+.affiliate-image-preview img{width:200px;max-width:100%;max-height:270px;object-fit:contain;display:block}
+.affiliate-manager-item{display:flex;gap:14px;align-items:center}
+.affiliate-manager-item>img{width:64px;height:84px;object-fit:cover;flex:none}
+@media(max-width:600px){.shop-products-grid{gap:23px 10px}.shop-product figcaption{font-size:14px}.affiliate-category-options{grid-template-columns:1fr}}
