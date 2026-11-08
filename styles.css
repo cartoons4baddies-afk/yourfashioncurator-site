@@ -46,12 +46,12 @@
 
 /* Strong, readable active state for the vintage navigation. */
 .tabs>a[aria-current="page"],.more.has-active>summary{
- background:#94607d;color:#fff9fc;border-color:#71435e;
- box-shadow:inset 1px 1px #ffffff30,0 2px 0 #6c4058;
+ background:#af7995;color:#fff9fc;border-color:#93627d;
+ box-shadow:inset 1px 1px #ffffff30,0 2px 0 #86566f;
  font-weight:700;
 }
-.tabs>a[aria-current="page"]:hover,.more.has-active>summary:hover{background:#84536f}
+.tabs>a[aria-current="page"]:hover,.more.has-active>summary:hover{background:#a46e8a}
 .tabs>a:hover:not([aria-current="page"]),.more:not(.has-active)>summary:hover{background:#f8e3eb}
 .more.has-active .chevron{border-color:#fff9fc}
-.dropdown a[aria-current="page"]{background:#94607d;color:#fff9fc;border-color:#71435e}
-.dropdown a[aria-current="page"]:hover{background:#84536f}
+.dropdown a[aria-current="page"]{background:#af7995;color:#fff9fc;border-color:#93627d}
+.dropdown a[aria-current="page"]:hover{background:#a46e8a}
