@@ -1,5 +1,5 @@
 (function(){
-const CATS=[['bring-back','Bring Back'],['predictions','Fashion Predictions'],['brands','Brand Discovery'],['beauty','Beauty'],['shop','The Shop'],['basics','The Basics'],['archives','Fashion Archives'],['jewelry','Jewelry'],['collections','Collections Worth Mentioning']];
+const CATS=[['bring-back','Bring Back'],['predictions','Fashion Predictions'],['brands','Brand Discovery'],['beauty','Beauty'],['shop','The Shop'],['basics','The Basics'],['archives','Fashion Archives'],['jewelry','Jewelry'],['collections','Collections Worth Mentioning'],['gifts','Gift Ideas']];
 const TITLES=Object.fromEntries([['home','Home'],...CATS]);
 let db=null;
 const cfg=window.YFC_CONFIG||{};
