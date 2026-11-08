@@ -46,10 +46,21 @@ function card(p){
 }
 function topLine(section=''){return '<div class="archive-top"><span>YOURFASHIONCURATOR / EST. 2026</span><span>'+esc(section||'INDEPENDENT FASHION JOURNAL')+'</span></div>'}
 function heading(label,caption){return '<div class="section-head"><h2>'+esc(label)+'</h2><small>'+esc(caption)+'</small></div>'}
-function updateMetadata(title,description){
+function updateMetadata(title,description,image){
  document.title=title+' — Yourfashioncurator';
+ const summary=String(description||'An independent fashion journal exploring fashion archives, beauty and collections.').slice(0,160);
  const meta=document.querySelector('meta[name="description"]');
- if(meta)meta.content=String(description||'An independent fashion journal exploring fashion archives, beauty and collections.').slice(0,160);
+ if(meta)meta.content=summary;
+ const canonical=document.querySelector('link[rel="canonical"]');
+ if(canonical)canonical.href=location.origin+location.pathname+(location.search||'');
+ const ogTitle=document.querySelector('meta[property="og:title"]');
+ const ogDescription=document.querySelector('meta[property="og:description"]');
+ const ogImage=document.querySelector('meta[property="og:image"]');
+ const ogUrl=document.querySelector('meta[property="og:url"]');
+ if(ogTitle)ogTitle.content=title+' — Yourfashioncurator';
+ if(ogDescription)ogDescription.content=summary;
+ if(ogImage&&image&&/^https:\/\//i.test(image))ogImage.content=image;
+ if(ogUrl)ogUrl.content=location.href;
 }
 const featuredPosts=posts.filter(p=>p.featured);
 const pinnedWidget=document.getElementById('pinned-widget');
@@ -62,7 +73,7 @@ if(postSlug){
  const p=posts.find(x=>x.slug===postSlug);
  if(!p){list.innerHTML=topLine()+'<div class="empty-journal"><h2>STORY NOT FOUND</h2><p>This article may not be published yet.</p></div>';return;}
  document.body.className='theme-'+(TITLES[p.category]?p.category:'home');
- updateMetadata(p.title,p.excerpt||'Fashion editorial by Yourfashioncurator');
+ updateMetadata(p.title,p.excerpt||'Fashion editorial by Yourfashioncurator',p.cover_url);
  list.innerHTML=topLine(TITLES[p.category])+
  '<article class="full-article"><a class="article-back" href="?section='+encodeURIComponent(p.category)+'">← '+esc(TITLES[p.category]||'ALL ARTICLES')+'</a>'+
  '<div class="article-kicker">'+esc(TITLES[p.category]||'')+' / '+date(p.published_at)+'</div><h1 class="article-title">'+esc(p.title)+'</h1>'+
