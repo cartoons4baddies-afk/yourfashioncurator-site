@@ -150,3 +150,53 @@
 .crop-editor input[type="range"]{display:block;width:100%;accent-color:#a96d8d;cursor:pointer}
 .crop-editor .outline-btn{margin-top:15px}
 @media(max-width:580px){.crop-editor{padding:12px}.crop-heading{display:block}.crop-heading span{display:block;margin-top:3px}}
+
+/* Front page / Fresh From the Archive: calm, consistent two-column editorial cards. */
+.archive-stories{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ column-gap:25px;
+ row-gap:35px;
+ align-items:start;
+}
+.archive-stories>.story,
+.archive-stories>.story:nth-child(3n+1){
+ display:block;
+ grid-column:auto;
+ min-width:0;
+ padding:0 0 15px;
+ border-bottom:1px solid #d3a8bb;
+}
+.archive-stories>.story img,
+.archive-stories>.story:nth-child(3n+1) img{
+ display:block;
+ width:100%;
+ height:auto;
+ aspect-ratio:4/3;
+ object-fit:cover;
+}
+.archive-stories>.story .category{
+ margin-top:15px;
+ font-size:9px;
+ letter-spacing:.13em;
+}
+.archive-stories>.story .story-title{
+ font-size:clamp(22px,2.5vw,31px);
+ line-height:1.12;
+ margin:9px 0 8px;
+}
+.archive-stories>.story .description{
+ font-size:12px;
+ line-height:1.65;
+ margin:0;
+}
+.archive-stories>.story:hover .story-title{
+ text-decoration:underline;
+ text-underline-offset:4px;
+}
+@media(max-width:580px){
+ .archive-stories{grid-template-columns:1fr;gap:28px}
+ .archive-stories>.story img,
+ .archive-stories>.story:nth-child(3n+1) img{aspect-ratio:4/3;height:auto}
+ .archive-stories>.story .story-title{font-size:26px}
+}
