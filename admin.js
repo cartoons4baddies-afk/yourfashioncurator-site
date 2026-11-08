@@ -1,5 +1,5 @@
 (async function(){
-const {db,CATS,esc,slug,renderBlocks,cleanUrl}=YFC;
+const {db,CATS,esc,slug,renderBlocks,renderCover,cleanUrl}=YFC;
 const $=id=>document.getElementById(id);
 const msg=(v)=>{$('app-msg').textContent=v||''};
 const configured=!!db;
@@ -30,12 +30,120 @@ $('posts-tab').addEventListener('click',async()=>{pane('posts');await loadPosts(
 $('new-post').addEventListener('click',()=>openEditor(null));$('cancel-edit').addEventListener('click',()=>pane('posts'));
 async function loadPosts(){const {data,error}=await db.from('posts').select('*').order('updated_at',{ascending:false});if(error){msg(error.message);return;}rows=data||[];renderList()}
 function renderList(){$('admin-post-list').innerHTML=rows.length?rows.map(p=>'<div class="manager-item"><div><strong>'+esc(p.title||'Untitled')+'</strong><small>'+esc(CATS.find(c=>c[0]===p.category)?.[1]||'')+' / '+esc(p.status)+' / '+(p.featured?'PINNED / ':'')+new Date(p.updated_at).toLocaleDateString('en-GB')+'</small></div><div><button class="outline-btn" data-edit="'+p.id+'">EDIT</button></div></div>').join(''):'<div class="empty-journal"><h2>THE ARCHIVE IS EMPTY</h2><p>Create your first article when you are ready.</p></div>';document.querySelectorAll('[data-edit]').forEach(btn=>btn.onclick=()=>openEditor(rows.find(p=>p.id===btn.dataset.edit)))}
-function openEditor(p){pane('editor');currentId=p?.id||null;blocks=Array.isArray(p?.blocks)?structuredClone(p.blocks):[];coverUrl=p?.cover_url||'';$('editor-heading').textContent=p?'EDIT ARTICLE':'NEW ARTICLE';$('post-title').value=p?.title||'';$('post-excerpt').value=p?.excerpt||'';$('post-slug').value=p?.slug||'';$('post-category').value=p?.category||'bring-back';$('post-status').value=p?.status||'draft';$('post-featured').checked=!!p?.featured;$('post-cover-file').value='';$('delete-post').hidden=!p;$('cover-preview').innerHTML=coverUrl?'<img style="max-width:230px;max-height:180px" src="'+cleanUrl(coverUrl)+'" alt="Current cover">':'';renderEditorBlocks();updatePreview()}
-function renderEditorBlocks(){const wrap=$('block-list');wrap.innerHTML=blocks.map((b,i)=>'<section class="block-edit" data-idx="'+i+'"><div class="block-controls"><strong>'+esc((b.type||'text').toUpperCase())+' / '+(i+1)+'</strong><div><button type="button" data-move="up" '+(i===0?'disabled':'')+'>↑</button><button type="button" data-move="down" '+(i===blocks.length-1?'disabled':'')+'>↓</button><button type="button" data-remove="1">×</button></div></div>'+(b.type==='divider'?'':(b.type==='image'||b.type==='sticker'?'<label>Upload '+(b.type==='sticker'?'sticker or cut-out':'photo')+'<input class="block-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label><label>Image URL<input data-field="url" type="url" value="'+esc(b.url||'')+'" placeholder="https://..."></label><label>Caption (optional)<input data-field="caption" value="'+esc(b.caption||'')+'"></label>':'<label>Text<textarea data-field="text" rows="3">'+esc(b.text||'')+'</textarea></label>')+'<div class="block-options"><label>Align<select data-field="align">'+['left','center','right'].map(v=>'<option '+(b.align===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label>'+(b.type==='image'||b.type==='sticker'?'<label>Width<select data-field="width">'+['narrow','wide','full'].map(v=>'<option '+(b.width===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label>':'<label>Text size<select data-field="size">'+['small','normal','large'].map(v=>'<option '+(b.size===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label>')+'</div>')+'</section>').join('');
-wrap.querySelectorAll('.block-edit').forEach(el=>{const i=Number(el.dataset.idx);el.querySelectorAll('[data-field]').forEach(inp=>inp.addEventListener('input',()=>{blocks[i][inp.dataset.field]=inp.value;updatePreview()}));el.querySelector('[data-remove]').onclick=()=>{blocks.splice(i,1);renderEditorBlocks();updatePreview()};for(const a of ['up','down']){el.querySelector('[data-move="'+a+'"]').onclick=()=>{const next=a==='up'?i-1:i+1;[blocks[i],blocks[next]]=[blocks[next],blocks[i]];renderEditorBlocks();updatePreview()}};const fi=el.querySelector('.block-file');if(fi)fi.onchange=async()=>{const file=fi.files?.[0];if(!file)return;fi.disabled=true;msg('Uploading image…');try{blocks[i].url=await upload(file);msg('Image uploaded.');renderEditorBlocks();updatePreview()}catch(e){msg('Upload failed: '+e.message);fi.disabled=false}}})}
-function updatePreview(){const title=$('post-title').value.trim()||'YOUR ARTICLE TITLE';const cover=$('cover-preview');if(!currentId&&coverUrl)cover.innerHTML='<img style="max-width:230px;max-height:180px" src="'+cleanUrl(coverUrl)+'" alt="Cover">';$('article-preview').innerHTML='<div class="article-kicker">'+esc(CATS.find(c=>c[0]===$('post-category').value)?.[1]||'')+'</div><h1 class="article-title">'+esc(title)+'</h1>'+(coverUrl?'<img class="article-cover" src="'+cleanUrl(coverUrl)+'" alt="Cover">':'')+'<p class="article-summary">'+esc($('post-excerpt').value.trim())+'</p><div class="article-content">'+renderBlocks(blocks)+'</div>'}
+function openEditor(p){pane('editor');currentId=p?.id||null;blocks=Array.isArray(p?.blocks)?structuredClone(p.blocks):[];
+ // Ensure every photo has a stable anchor, including older articles.
+ blocks.forEach((b,i)=>{if(b.type==='image'&&!b.uid)b.uid='image-'+crypto.randomUUID();});
+ blocks.forEach((b,i)=>{if(b.type==='sticker'&&!b.anchor){const prev=blocks.slice(0,i).reverse().find(q=>q.type==='image');b.anchor=prev?.uid||'cover';}});
+ coverUrl=p?.cover_url||'';$('editor-heading').textContent=p?'EDIT ARTICLE':'NEW ARTICLE';$('post-title').value=p?.title||'';$('post-excerpt').value=p?.excerpt||'';$('post-slug').value=p?.slug||'';$('post-category').value=p?.category||'bring-back';$('post-status').value=p?.status||'draft';$('post-featured').checked=!!p?.featured;$('post-cover-file').value='';$('delete-post').hidden=!p;$('cover-preview').innerHTML=coverUrl?'<img style="max-width:230px;max-height:180px" src="'+cleanUrl(coverUrl)+'" alt="Current cover">':'';renderEditorBlocks();updatePreview()}
+
+function photoTargets(){return [{id:'cover',label:'COVER PHOTO'},...blocks.filter(b=>b.type==='image').map((b,i)=>({id:b.uid,label:'ARTICLE PHOTO '+(i+1)}))];}
+function renderEditorBlocks(){
+ const wrap=$('block-list'),targets=photoTargets();
+ wrap.innerHTML=blocks.map((b,i)=>{
+ const kind=b.type||'text';
+ const top='<div class="block-controls"><strong>'+esc(kind.toUpperCase())+' / '+(i+1)+'</strong><div><button type="button" data-move="up" '+(i===0?'disabled':'')+'>↑</button><button type="button" data-move="down" '+(i===blocks.length-1?'disabled':'')+'>↓</button><button type="button" data-remove="1">×</button></div></div>';
+ let fields='';
+ if(kind==='sticker'){
+  const options=[['tape','CREAM TAPE'],['pink','PINK TAPE'],['silver','SILVER TAPE'],['custom','CUSTOM STICKER IMAGE']].map(([v,l])=>'<option value="'+v+'" '+((b.stickerKind||'tape')===v?'selected':'')+'>'+l+'</option>').join('');
+  const anchorOptions=targets.map(t=>'<option value="'+esc(t.id)+'" '+(b.anchor===t.id?'selected':'')+'>'+esc(t.label)+'</option>').join('');
+  fields='<p class="hint">Drag this sticker directly on its photo in LIVE PREVIEW. Only stickers move; the article stays structured.</p>'+
+   '<div class="block-options"><label>Sticker style<select data-field="stickerKind">'+options+'</select></label><label>On photo<select data-field="anchor">'+anchorOptions+'</select></label></div>'+
+   '<div class="block-options"><label>Size (%)<input type="number" min="10" max="65" data-field="scale" value="'+esc(b.scale??27)+'"></label><label>Rotation (°)<input type="number" min="-180" max="180" data-field="angle" value="'+esc(b.angle??-13)+'"></label></div>'+
+   '<label>Custom PNG / image (only for custom sticker)<input class="block-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label>'+
+   '<label>Custom sticker URL<input data-field="url" type="url" value="'+esc(b.url||'')+'" placeholder="https://..."></label>';
+ }else if(kind==='divider'){
+  fields='';
+ }else{
+  fields=kind==='image'?'<label>Upload photo<input class="block-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label><label>Image URL<input data-field="url" type="url" value="'+esc(b.url||'')+'" placeholder="https://..."></label><label>Caption (optional)<input data-field="caption" value="'+esc(b.caption||'')+'"></label>':'<label>Text<textarea data-field="text" rows="3">'+esc(b.text||'')+'</textarea></label>';
+  fields+='<div class="block-options"><label>Align<select data-field="align">'+['left','center','right'].map(v=>'<option value="'+v+'" '+(b.align===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label>'+(kind==='image'?'<label>Width<select data-field="width">'+['narrow','wide','full'].map(v=>'<option value="'+v+'" '+(b.width===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label>':'<label>Text size<select data-field="size">'+['small','normal','large'].map(v=>'<option value="'+v+'" '+(b.size===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label>')+'</div>';
+ }
+ return '<section class="block-edit" data-idx="'+i+'">'+top+fields+'</section>';
+ }).join('');
+ wrap.querySelectorAll('.block-edit').forEach(el=>{
+  const i=Number(el.dataset.idx);
+  el.querySelectorAll('[data-field]').forEach(inp=>inp.addEventListener('input',()=>{
+   let val=inp.value;if(inp.type==='number')val=Number(val);
+   blocks[i][inp.dataset.field]=val;updatePreview();
+  }));
+  el.querySelector('[data-remove]').onclick=()=>{
+   const deleted=blocks[i];
+   if(deleted.type==='image')blocks.filter(b=>b.type==='sticker'&&b.anchor===deleted.uid).forEach(b=>b.anchor='cover');
+   blocks.splice(i,1);renderEditorBlocks();updatePreview();
+  };
+  for(const a of ['up','down'])el.querySelector('[data-move="'+a+'"]').onclick=()=>{
+   const next=a==='up'?i-1:i+1;
+   [blocks[i],blocks[next]]=[blocks[next],blocks[i]];
+   renderEditorBlocks();updatePreview();
+  };
+  const fi=el.querySelector('.block-file');
+  if(fi)fi.onchange=async()=>{
+   const file=fi.files?.[0];if(!file)return;
+   fi.disabled=true;msg('Uploading image…');
+   try{blocks[i].url=await upload(file);msg('Image uploaded.');renderEditorBlocks();updatePreview();}
+   catch(e){msg('Upload failed: '+e.message);fi.disabled=false;}
+  };
+ });
+}
+
+function updatePreview(){
+ const title=$('post-title').value.trim()||'YOUR ARTICLE TITLE';
+ const cover=$('cover-preview');
+ if(coverUrl)cover.innerHTML='<img style="max-width:230px;max-height:180px" src="'+cleanUrl(coverUrl)+'" alt="Cover">';
+ $('article-preview').innerHTML='<div class="article-kicker">'+esc(CATS.find(c=>c[0]===$('post-category').value)?.[1]||'')+'</div><h1 class="article-title">'+esc(title)+'</h1>'+renderCover(coverUrl,blocks,true)+'<p class="article-summary">'+esc($('post-excerpt').value.trim())+'</p><div class="article-content">'+renderBlocks(blocks,{interactive:true})+'</div>';
+}
 for(const id of ['post-title','post-excerpt','post-category'])$(id).addEventListener('input',updatePreview);
-document.querySelectorAll('[data-add]').forEach(btn=>btn.onclick=()=>{const type=btn.dataset.add;blocks.push({type,text:'',url:'',caption:'',align:'left',size:'normal',width:type==='sticker'?'narrow':'wide'});renderEditorBlocks();updatePreview()});
+document.querySelectorAll('[data-add]').forEach(btn=>btn.onclick=()=>{
+ const type=btn.dataset.add;
+ if(type==='sticker'){
+  const image=blocks.filter(b=>b.type==='image'&&b.url).at(-1);
+  if(!image&&!coverUrl){msg('Add a cover photo or article photo first, then place tape on it.');return;}
+  blocks.push({type:'sticker',stickerKind:'tape',anchor:image?.uid||'cover',x:80,y:9,scale:27,angle:-13,url:''});
+ }else{
+  blocks.push({type,text:'',url:'',caption:'',align:'left',size:'normal',width:'wide',...(type==='image'?{uid:'image-'+crypto.randomUUID()}: {})});
+ }
+ renderEditorBlocks();updatePreview();msg('');
+});
+// Only stickers are draggable; photographs and text remain in normal reading order.
+let dragging=null;
+$('article-preview').addEventListener('pointerdown',event=>{
+ const sticker=event.target.closest('[data-sticker-idx]');
+ if(!sticker||event.button!==0)return;
+ const stage=sticker.closest('.photo-stage');if(!stage)return;
+ dragging={index:Number(sticker.dataset.stickerIdx),stage,sticker,pointer:event.pointerId};
+ sticker.setPointerCapture(event.pointerId);event.preventDefault();
+});
+$('article-preview').addEventListener('pointermove',event=>{
+ if(!dragging||dragging.pointer!==event.pointerId)return;
+ const {stage,sticker,index}=dragging,rect=stage.getBoundingClientRect();
+ if(!rect.width||!rect.height)return;
+ const x=Math.min(105,Math.max(-5,100*(event.clientX-rect.left)/rect.width));
+ const y=Math.min(105,Math.max(-5,100*(event.clientY-rect.top)/rect.height));
+ blocks[index].x=Math.round(x*10)/10;blocks[index].y=Math.round(y*10)/10;
+ sticker.style.left=x+'%';sticker.style.top=y+'%';
+});
+function finishDrag(event){
+ if(!dragging||dragging.pointer!==event.pointerId)return;
+ dragging=null;
+}
+$('article-preview').addEventListener('pointerup',finishDrag);
+$('article-preview').addEventListener('pointercancel',finishDrag);
+$('article-preview').addEventListener('keydown',event=>{
+ const sticker=event.target.closest('[data-sticker-idx]');if(!sticker)return;
+ const b=blocks[Number(sticker.dataset.stickerIdx)],delta=event.shiftKey?5:1;
+ if(event.key==='ArrowLeft')b.x=Math.max(-5,(b.x??80)-delta);
+ else if(event.key==='ArrowRight')b.x=Math.min(105,(b.x??80)+delta);
+ else if(event.key==='ArrowUp')b.y=Math.max(-5,(b.y??9)-delta);
+ else if(event.key==='ArrowDown')b.y=Math.min(105,(b.y??9)+delta);
+ else return;
+ event.preventDefault();sticker.style.left=b.x+'%';sticker.style.top=b.y+'%';
+});
+$('post-cover-file').addEventListener('change',async()=>{
+ const input=$('post-cover-file'),file=input.files?.[0];if(!file)return;
+ msg('Uploading cover photo…');input.disabled=true;
+ try{coverUrl=await upload(file);input.value='';renderEditorBlocks();updatePreview();msg('Cover photo uploaded.');}
+ catch(error){msg('Cover upload failed: '+error.message);}
+ finally{input.disabled=false;}
+});
 async function upload(file){if(!/^image\/(jpeg|png|webp|gif)$/.test(file.type))throw new Error('Only JPG, PNG, WebP or GIF images are supported.');if(file.size>8*1024*1024)throw new Error('Maximum image size: 8 MB.');const extension=file.type==='image/jpeg'?'jpg':file.type.split('/')[1];const filename=crypto.randomUUID()+'.'+extension;const {error}=await db.storage.from('media').upload('uploads/'+filename,file,{contentType:file.type,upsert:false});if(error)throw error;const {data}=db.storage.from('media').getPublicUrl('uploads/'+filename);return data.publicUrl}
 $('post-form').addEventListener('submit',async e=>{e.preventDefault();msg('Saving article…');$('save-post').disabled=true;try{const file=$('post-cover-file').files?.[0];if(file)coverUrl=await upload(file);const title=$('post-title').value.trim();if(!title)throw Error('Add a title.');const status=$('post-status').value;const slugInput=slug($('post-slug').value||title);if(!slugInput)throw Error('Please enter a valid URL slug.');const prior=rows.find(p=>p.id===currentId);const row={title,slug:slugInput,excerpt:$('post-excerpt').value.trim(),category:$('post-category').value,status,featured:$('post-featured').checked,cover_url:coverUrl||null,blocks,published_at:status==='published'?(prior?.published_at||new Date().toISOString()):null};const op=currentId?db.from('posts').update(row).eq('id',currentId):db.from('posts').insert(row);const {error}=await op;if(error)throw error;msg('Saved successfully.');await loadPosts();pane('posts')}catch(err){msg('Could not save: '+err.message)}finally{$('save-post').disabled=false}});
 $('delete-post').addEventListener('click',async()=>{if(!currentId||!confirm('Delete this article permanently?'))return;const {error}=await db.from('posts').delete().eq('id',currentId);if(error){msg(error.message);return;}await loadPosts();pane('posts')});
