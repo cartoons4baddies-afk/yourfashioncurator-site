@@ -1,5 +1,5 @@
 (async function(){
-const {db,TITLES,esc,renderBlocks,cleanUrl}=YFC;
+const {db,TITLES,esc,renderBlocks,renderCover,cleanUrl}=YFC;
 const qs=new URLSearchParams(location.search);const category=qs.get('section')||'home';const postSlug=qs.get('post');const validCategory=Object.hasOwn(TITLES,category)?category:'home';
 document.body.className='theme-'+validCategory;
 const list=document.getElementById('main-content');document.querySelectorAll('[data-section]').forEach(a=>{if(a.dataset.section===validCategory)a.setAttribute('aria-current','page')});
@@ -18,7 +18,7 @@ function topLine(section=''){return '<div class="archive-top"><span>YOURFASHIONC
 function heading(label,caption){return '<div class="section-head"><h2>'+esc(label)+'</h2><small>'+esc(caption)+'</small></div>'}
 if(postSlug){const p=posts.find(x=>x.slug===postSlug);if(!p){list.innerHTML=topLine()+'<div class="empty-journal"><h2>STORY NOT FOUND</h2><p>This article may not be published yet.</p></div>';return;}
  document.body.className='theme-'+(TITLES[p.category]?p.category:'home');document.title=p.title+' — Yourfashioncurator';
- list.innerHTML=topLine(TITLES[p.category])+ '<div style="margin-top:24px"><a class="article-back" href="?section='+encodeURIComponent(p.category)+'">← '+esc(TITLES[p.category]||'ALL ARTICLES')+'</a><div class="article-kicker" style="margin-top:35px">'+esc(TITLES[p.category]||'')+' / '+date(p.published_at)+'</div><h1 class="article-title">'+esc(p.title)+'</h1>'+(p.excerpt?'<p class="article-summary">'+esc(p.excerpt)+'</p>':'')+(p.cover_url?'<img class="article-cover" src="'+cleanUrl(p.cover_url)+'" alt="Cover image">':'')+'<div class="article-content">'+renderBlocks(p.blocks)+'</div></div>';return;
+ list.innerHTML=topLine(TITLES[p.category])+ '<div style="margin-top:24px"><a class="article-back" href="?section='+encodeURIComponent(p.category)+'">← '+esc(TITLES[p.category]||'ALL ARTICLES')+'</a><div class="article-kicker" style="margin-top:35px">'+esc(TITLES[p.category]||'')+' / '+date(p.published_at)+'</div><h1 class="article-title">'+esc(p.title)+'</h1>'+(p.excerpt?'<p class="article-summary">'+esc(p.excerpt)+'</p>':'')+renderCover(p.cover_url,p.blocks)+'<div class="article-content">'+renderBlocks(p.blocks)+'</div></div>';return;
 }
 let display=validCategory==='home'?posts:posts.filter(p=>p.category===validCategory);
 const fixedIntro=String(settings.intro||'').trim();let html=topLine(validCategory==='home'?'THE FRONT PAGE':TITLES[validCategory]);
