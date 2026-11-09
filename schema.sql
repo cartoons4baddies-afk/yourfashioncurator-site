@@ -17,7 +17,7 @@ create table if not exists public.posts (
   updated_at timestamptz not null default now()
 );
 create table if not exists public.site_settings (
- key text primary key check (key in ('intro','about','instagram','tiktok','email')),
+ key text primary key check (key in ('intro','about','instagram','tiktok','pinterest','email')),
  value text not null default ''
 );
 create or replace function public.update_post_timestamp() returns trigger language plpgsql as $$
@@ -68,3 +68,9 @@ create policy "Editor delete media" on storage.objects for delete to authenticat
 
 -- AFTER creating your admin user in Supabase Authentication -> Users, run separately:
 -- insert into public.editors(user_id) values ('YOUR-AUTH-USER-UUID');
+
+-- MIGRATION for existing installations (run ONCE in the Supabase SQL Editor).
+-- New installations already have Pinterest included above.
+alter table public.site_settings drop constraint if exists site_settings_key_check;
+alter table public.site_settings add constraint site_settings_key_check
+ check (key in ('intro','about','instagram','tiktok','pinterest','email'));
