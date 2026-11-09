@@ -20,7 +20,7 @@ if(/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
 function profileUsername(value,platform){
  try{
   const u=new URL(value),host=u.hostname.toLowerCase().replace(/^www\./,'');
-  const accepted=platform==='instagram'?['instagram.com']:['tiktok.com'];
+  const accepted=platform==='instagram'?['instagram.com']:platform==='pinterest'?['pinterest.com','pinterest.co.uk','pinterest.fr','pinterest.ch']:['tiktok.com'];
   if(!accepted.includes(host))return '';
   const part=decodeURIComponent(u.pathname.split('/').filter(Boolean)[0]||'').replace(/^@/,'');
   if(!part || ['p','reel','reels','stories','explore','share','login','accounts','video','tag'].includes(part.toLowerCase()))return '';
@@ -28,7 +28,7 @@ function profileUsername(value,platform){
  }catch{return '';}
 }
 const links=[];
-for(const [key,label] of [['instagram','INSTAGRAM'],['tiktok','TIKTOK']]){
+for(const [key,label] of [['instagram','INSTAGRAM'],['tiktok','TIKTOK'],['pinterest','PINTEREST']]){
  const original=String(settings[key]||'').trim();
  const url=cleanUrl(original);
  if(!url)continue;
