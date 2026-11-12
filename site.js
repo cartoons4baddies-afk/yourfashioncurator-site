@@ -148,9 +148,10 @@ if(validCategory==='home'){
 }else{
  updateMetadata(TITLES[validCategory]||'The Journal','Explore '+(TITLES[validCategory]||'fashion')+' stories on Yourfashioncurator.');
  html+='<div class="cover-note"><div><span class="tiny">THE JOURNAL / '+esc(validCategory.toUpperCase())+'</span><h1>'+esc(validCategory==='shop'?'MY CURATED SHOP':TITLES[validCategory])+'</h1></div><span class="issue">The Edit</span></div>';
+ if(validCategory==='tv-fashion')html+='<section class="tv-fashion-intro"><span>YOURFASHIONCURATOR / THE SCREEN EDIT</span><p>From the small screen to the fashion archives. Exploring the wardrobes, costumes and style moments that made television unforgettable.</p></section>';
  html+=validCategory==='shop'?shopFolderGallery(visibleProducts):productGallery(visibleProducts);
- if(display.length){html+=heading('THE ARTICLES',display.length+' STORIES')+'<div class="stories archive-stories category-stories">'+display.map(card).join('')+'</div>';}
- else if(!visibleProducts.length){html+='<div class="empty-journal"><h2>NO STORIES YET.</h2><p>New fashion stories will appear here when published.</p></div>';} 
+ if(display.length){html+=heading(validCategory==='tv-fashion'?'THE EPISODES':'THE ARTICLES',display.length+' STORIES')+'<div class="stories archive-stories category-stories">'+display.map(card).join('')+'</div>';}
+ else if(!visibleProducts.length){html+='<div class="empty-journal"><h2>'+(validCategory==='tv-fashion'?'THE FIRST EPISODE IS COMING.':'NO STORIES YET.')+'</h2><p>'+(validCategory==='tv-fashion'?'A new fashion story from the screen is on its way.':'New fashion stories will appear here when published.')+'</p></div>';} 
 }
 list.innerHTML=html;
 })();
