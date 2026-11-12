@@ -43,7 +43,7 @@ function renderProductList(){
  $('admin-product-list').innerHTML=products.length?products.map(p=>{
   const data=productData(p)||{};
   const image=p.cover_url?'<img src="'+cleanUrl(p.cover_url)+'" alt="" loading="lazy">':'';
-  return '<div class="manager-item affiliate-manager-item">'+image+'<div><strong>'+esc(p.title)+'</strong><small>'+esc(p.status.toUpperCase())+' / '+esc((data.categories||['shop']).map(c=>productCategories.find(x=>x[0]===c)?.[1]||c).join(', '))+'</small></div><button type="button" class="outline-btn" data-edit-product="'+p.id+'">EDIT</button></div>';
+  return '<div class="manager-item affiliate-manager-item">'+image+'<div><strong>'+esc(p.title)+'</strong><small>'+esc(p.status.toUpperCase())+' / FOLDER: '+esc(data.folder||'Unsorted Finds')+' / '+esc((data.categories||['shop']).map(c=>productCategories.find(x=>x[0]===c)?.[1]||c).join(', '))+'</small></div><button type="button" class="outline-btn" data-edit-product="'+p.id+'">EDIT</button></div>';
  }).join(''):'<div class="empty-journal"><h2>YOUR SHOPPING EDIT STARTS HERE</h2><p>Add a product photo, a clickable description and an affiliate link.</p></div>';
  $('admin-product-list').querySelectorAll('[data-edit-product]').forEach(btn=>btn.onclick=()=>openProductEditor(rows.find(p=>p.id===btn.dataset.editProduct)));
 }
@@ -59,6 +59,7 @@ function openProductEditor(p){
  $('product-description').value=p?.excerpt||'';
  $('product-photo').value=p?.cover_url||'';
  $('product-link').value=data.linkUrl||'';
+ $('product-folder').value=data.folder||'';
  $('product-file').value='';
  $('product-status').value=p?.status||'draft';
  const selected=Array.isArray(data.categories)?data.categories:['shop'];
@@ -83,7 +84,8 @@ $('product-form').addEventListener('submit',async e=>{
   const prior=rows.find(p=>p.id===productId);
   const slugInput=prior?.slug||'affiliate-product-'+slug(title).slice(0,60)+'-'+crypto.randomUUID().slice(0,8);
   const status=$('product-status').value;
-  const row={title,slug:slugInput,excerpt:description,category:'shop',cover_url:photo,status,featured:false,blocks:[{type:'affiliate-listing',linkUrl,categories}],published_at:status==='published'?(prior?.published_at||new Date().toISOString()):null};
+  const folder=$('product-folder').value.trim().replace(/\s+/g,' ').slice(0,45);
+  const row={title,slug:slugInput,excerpt:description,category:'shop',cover_url:photo,status,featured:false,blocks:[{type:'affiliate-listing',linkUrl,categories,folder}],published_at:status==='published'?(prior?.published_at||new Date().toISOString()):null};
   const op=productId?db.from('posts').update(row).eq('id',productId):db.from('posts').insert(row);
   const {error}=await op;if(error)throw error;
   msg('Affiliate product saved.');await loadPosts();pane('products');renderProductList();
