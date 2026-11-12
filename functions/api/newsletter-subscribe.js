@@ -11,7 +11,7 @@ export async function onRequestPost({request,env}) {
  if(!Number.isSafeInteger(listId)||!Number.isSafeInteger(templateId))return json({error:'The mailing list is being prepared.'},503);
  try{
  const response=await fetch('https://api.brevo.com/v3/contacts/doubleOptinConfirmation',{method:'POST',headers:{'api-key':env.BREVO_API_KEY,'content-type':'application/json','accept':'application/json'},body:JSON.stringify({email,includeListIds:[listId],redirectionUrl:new URL('/?newsletter=confirmed',request.url).href,templateId})});
- if(!response.ok){console.error('Brevo double-opt-in failure',response.status);return json({error:'Subscription is temporarily unavailable. Please try again later.'},502)}
+ if(!response.ok){const detail=(await response.text()).slice(0,600);console.error('Brevo DOI error',JSON.stringify({status:response.status,detail:detail.replace(email,'[email-redacted]'),templateId,listId}));return json({error:'Brevo could not confirm this subscription yet. Please try again later.',errorCode:'BREVO_'+response.status},502)}
  return json({ok:true});
  }catch(err){console.error('Newsletter connection failed',err);return json({error:'Subscription is temporarily unavailable.'},502)}
 }
