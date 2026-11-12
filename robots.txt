@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /admin.html
-Sitemap: https://yourfashioncurator.netlify.app/sitemap.xml
+Sitemap: https://yourfashioncurator-site.pages.dev/sitemap.xml
