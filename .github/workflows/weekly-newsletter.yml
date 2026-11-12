@@ -1,0 +1,28 @@
+name: THE YFC LETTER — Weekly fashion roundup
+on:
+  schedule:
+    - cron: '0 18 * * 0'
+      timezone: 'Europe/Zurich'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: yfc-weekly-newsletter
+  cancel-in-progress: false
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Send weekly roundup (only if all secrets configured)
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_LIST_ID: ${{ secrets.BREVO_LIST_ID }}
+          BREVO_SENDER_EMAIL: ${{ secrets.BREVO_SENDER_EMAIL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: node scripts/send-weekly-newsletter.mjs
