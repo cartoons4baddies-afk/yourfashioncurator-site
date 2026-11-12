@@ -7,7 +7,7 @@ create table if not exists public.posts (
   title text not null check (char_length(title) between 1 and 180),
   slug text not null unique check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
   excerpt text not null default '',
-  category text not null check(category in ('bring-back','predictions','brands','beauty','shop','basics','archives','jewelry','collections','gifts')),
+  category text not null check(category in ('bring-back','predictions','brands','beauty','shop','basics','archives','jewelry','collections','gifts','tv-fashion')),
   cover_url text,
   blocks jsonb not null default '[]'::jsonb check (jsonb_typeof(blocks)='array'),
   status text not null default 'draft' check (status in ('draft','published')),
