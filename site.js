@@ -57,6 +57,21 @@ function productCard(p){
  '<a class="shop-product-photo" href="'+url+'" target="_blank" rel="sponsored nofollow noopener noreferrer" aria-label="Shop '+esc(p.title)+'"><img loading="lazy" src="'+image+'" alt="'+esc(p.title)+'"></a>'+
  '<figcaption><a href="'+url+'" target="_blank" rel="sponsored nofollow noopener noreferrer">'+description+'</a></figcaption></figure>';
 }
+function shopFolderGallery(items){
+ const valid=items.filter(p=>cleanUrl(p.cover_url)&&cleanUrl(productDetails(p).linkUrl));
+ if(!valid.length)return '';
+ const groups=new Map();
+ for(const p of valid){
+  const folder=String(productDetails(p).folder||'').trim().replace(/\s+/g,' ').slice(0,45)||'Unsorted Finds';
+  const key=folder.toLocaleLowerCase('en');
+  if(!groups.has(key))groups.set(key,{name:folder,items:[]});
+  groups.get(key).items.push(p);
+ }
+ const ordered=[...groups.values()].sort((a,b)=>(a.name==='Unsorted Finds')-(b.name==='Unsorted Finds'));
+ const shortcuts=ordered.map((g,i)=>'<a class="shop-folder-link" href="#shop-folder-'+i+'">'+esc(g.name)+' <span>'+g.items.length+'</span></a>').join('');
+ const sections=ordered.map((g,i)=>'<section class="shop-folder" id="shop-folder-'+i+'" aria-label="'+esc(g.name)+'"><div class="shop-folder-heading"><div><small>THE SHOP / FOLDER '+String(i+1).padStart(2,'0')+'</small><h2>'+esc(g.name)+'</h2></div><span>'+g.items.length+' FINDS · SWIPE TO EXPLORE</span></div><div class="shop-folder-rail" tabindex="0" aria-label="Scroll '+esc(g.name)+' products horizontally">'+g.items.map(productCard).join('')+'</div></section>').join('');
+ return '<section class="shop-folders-section" aria-label="Shop by folder"><div class="shop-folders-intro"><span>YOURFASHIONCURATOR / THE SHOP</span><h2>THE CURATED CLOSET</h2><p>Little folders of fashion finds. Pick a category, scroll through the edit, and discover something worth keeping.</p></div><nav class="shop-folder-nav" aria-label="Shopping folders">'+shortcuts+'</nav>'+sections+'<p class="affiliate-disclosure">Some shopping links are affiliate links. Yourfashioncurator may earn a commission on qualifying purchases, at no additional cost to you.</p></section>';
+}
 function productsIn(section){return products.filter(p=>{
  const cats=productDetails(p).categories;
  return Array.isArray(cats)?cats.includes(section):section==='shop';
@@ -133,7 +148,7 @@ if(validCategory==='home'){
 }else{
  updateMetadata(TITLES[validCategory]||'The Journal','Explore '+(TITLES[validCategory]||'fashion')+' stories on Yourfashioncurator.');
  html+='<div class="cover-note"><div><span class="tiny">THE JOURNAL / '+esc(validCategory.toUpperCase())+'</span><h1>'+esc(TITLES[validCategory])+'</h1></div><span class="issue">The Edit</span></div>';
- html+=productGallery(visibleProducts);
+ html+=validCategory==='shop'?shopFolderGallery(visibleProducts):productGallery(visibleProducts);
  if(display.length){html+=heading('THE ARTICLES',display.length+' STORIES')+'<div class="stories archive-stories category-stories">'+display.map(card).join('')+'</div>';}
  else if(!visibleProducts.length){html+='<div class="empty-journal"><h2>NO STORIES YET.</h2><p>New fashion stories will appear here when published.</p></div>';} 
 }
