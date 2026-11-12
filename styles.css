@@ -318,3 +318,42 @@ body.yfc-popup-open{overflow:hidden}
 .yfc-newsletter-backdrop .yfc-newsletter-inner{padding:29px clamp(20px,5vw,38px) 24px}
 .yfc-newsletter-backdrop .yfc-newsletter h2{font-size:clamp(27px,4vw,37px)}
 @media(max-width:600px){.yfc-newsletter-backdrop{padding:12px}.yfc-newsletter-backdrop .yfc-newsletter{max-height:calc(100dvh - 24px)}.yfc-newsletter-backdrop .yfc-newsletter-top{padding-right:48px}.yfc-newsletter-backdrop .yfc-newsletter-top span{display:none}}
+
+
+/* Mobile popup centering fix: keep dialog in visual viewport instead of document flow. */
+@media(max-width:700px){
+ .yfc-newsletter-backdrop{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw;
+  height:100vh;
+  height:100dvh;
+  min-height:0;
+  display:grid!important;
+  place-items:center!important;
+  padding:16px!important;
+  overflow:hidden;
+  overscroll-behavior:contain;
+ }
+ .yfc-newsletter-backdrop[hidden]{display:none!important}
+ .yfc-newsletter-backdrop .yfc-newsletter{
+  position:relative!important;
+  display:block;
+  justify-self:center;
+  align-self:center;
+  width:min(100%,480px)!important;
+  max-width:480px!important;
+  max-height:calc(100vh - 32px);
+  max-height:calc(100dvh - 32px);
+  margin:0!important;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  box-shadow:5px 6px 0 rgba(37,19,34,.2);
+ }
+ .yfc-newsletter-backdrop .yfc-newsletter-inner{padding:22px 19px 18px}
+ .yfc-newsletter-backdrop .yfc-newsletter h2{font-size:clamp(25px,7vw,33px)}
+ .yfc-newsletter-backdrop .yfc-newsletter-inner>p:not(.yfc-newsletter-overline){font-size:12px;line-height:1.5;margin-bottom:15px}
+ .yfc-newsletter-backdrop .yfc-newsletter-controls input{font-size:16px}
+ .yfc-newsletter-backdrop .yfc-newsletter-consent{font-size:10px}
+}
