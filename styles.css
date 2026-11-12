@@ -284,3 +284,25 @@
 .affiliate-manager-item{display:flex;gap:14px;align-items:center}
 .affiliate-manager-item>img{width:64px;height:84px;object-fit:cover;flex:none}
 @media(max-width:600px){.shop-products-grid{gap:23px 10px}.shop-product figcaption{font-size:14px}.affiliate-category-options{grid-template-columns:1fr}}
+
+
+/* THE YFC LETTER — homepage newsletter */
+.yfc-newsletter{margin:12px 0 30px;border:1px solid #b9819a;background:#faedf2;box-shadow:5px 5px 0 #d4a5b9}
+.yfc-newsletter-top,.yfc-newsletter-bottom{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 17px;background:#efd0de;border-bottom:1px solid #c99db1;font:700 10px/1.5 'DM Sans',sans-serif;letter-spacing:.16em}
+.yfc-newsletter-top span{font-weight:500;font-size:9px;letter-spacing:.1em}
+.yfc-newsletter-bottom{justify-content:center;border-bottom:0;border-top:1px solid #c99db1;font-size:9px;background:#f2dce5}
+.yfc-newsletter-inner{max-width:750px;margin:auto;padding:32px clamp(18px,5vw,45px) 28px;text-align:center}
+.yfc-newsletter-overline{font-size:10px;font-weight:700;letter-spacing:.19em;color:#89586c;margin:0 0 12px}
+.yfc-newsletter h2{font:italic clamp(27px,4vw,43px)/1.13 'Playfair Display',Georgia,serif;margin:0 0 16px;color:#3f2432}
+.yfc-newsletter-inner>p:not(.yfc-newsletter-overline){font-size:13px;line-height:1.75;color:#634957;margin:0 auto 24px;max-width:550px}
+.yfc-newsletter-label{display:block;text-align:left;max-width:565px;margin:0 auto 8px;font-size:10px;font-weight:700;letter-spacing:.13em}
+.yfc-newsletter-controls{display:flex;gap:8px;max-width:565px;margin:auto}
+.yfc-newsletter-controls input{min-width:0;flex:1;border:1px solid #b98299;border-radius:0;background:#fffdfd;padding:13px;font-size:13px}
+.yfc-newsletter-controls button{border:1px solid #341d29;border-radius:0;background:#341d29;color:#fff7fb;padding:13px 17px;font-size:10px;font-weight:700;letter-spacing:.08em}
+.yfc-newsletter-controls button:hover{background:#65364c}
+.yfc-newsletter-consent{display:flex;text-align:left;gap:8px;max-width:565px;margin:13px auto 0;font-size:11px;line-height:1.5;color:#664b59}
+.yfc-newsletter-consent input{flex:none;margin:2px 0 0}
+.yfc-newsletter-consent a{text-decoration:underline}
+.yfc-newsletter-feedback{font-size:12px;min-height:1.3em;margin:12px 0 0}
+.yfc-newsletter-honeypot{position:absolute!important;left:-9999px!important;opacity:0!important}
+@media(max-width:600px){.yfc-newsletter{margin:10px 0 24px}.yfc-newsletter-top{font-size:9px}.yfc-newsletter-top span{font-size:8px}.yfc-newsletter-controls{flex-direction:column}.yfc-newsletter-controls button{min-height:44px}}
