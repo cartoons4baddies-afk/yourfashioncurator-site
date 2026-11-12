@@ -306,3 +306,15 @@
 .yfc-newsletter-feedback{font-size:12px;min-height:1.3em;margin:12px 0 0}
 .yfc-newsletter-honeypot{position:absolute!important;left:-9999px!important;opacity:0!important}
 @media(max-width:600px){.yfc-newsletter{margin:10px 0 24px}.yfc-newsletter-top{font-size:9px}.yfc-newsletter-top span{font-size:8px}.yfc-newsletter-controls{flex-direction:column}.yfc-newsletter-controls button{min-height:44px}}
+
+/* THE YFC LETTER — dismissible homepage popup, no layout space */
+body.yfc-popup-open{overflow:hidden}
+.yfc-newsletter-backdrop{position:fixed;inset:0;z-index:10000;background:rgba(29,16,28,.57);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.yfc-newsletter-backdrop[hidden],.yfc-newsletter[hidden]{display:none!important}
+.yfc-newsletter-backdrop .yfc-newsletter{position:relative;flex:0 1 565px;width:100%;max-height:calc(100dvh - 40px);overflow-y:auto;margin:0;border:1px solid #aa748e;background:#fff0f5;box-shadow:10px 12px 0 rgba(37,19,34,.25)}
+.yfc-newsletter-close{position:absolute;right:8px;top:5px;z-index:2;display:grid;place-items:center;width:38px;height:38px;padding:0;background:transparent;color:#35202d;border:0;font-size:29px;line-height:1;cursor:pointer}
+.yfc-newsletter-close:hover,.yfc-newsletter-close:focus-visible{color:#a44273}
+.yfc-newsletter-backdrop .yfc-newsletter-top{padding-right:48px}
+.yfc-newsletter-backdrop .yfc-newsletter-inner{padding:29px clamp(20px,5vw,38px) 24px}
+.yfc-newsletter-backdrop .yfc-newsletter h2{font-size:clamp(27px,4vw,37px)}
+@media(max-width:600px){.yfc-newsletter-backdrop{padding:12px}.yfc-newsletter-backdrop .yfc-newsletter{max-height:calc(100dvh - 24px)}.yfc-newsletter-backdrop .yfc-newsletter-top{padding-right:48px}.yfc-newsletter-backdrop .yfc-newsletter-top span{display:none}}
