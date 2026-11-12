@@ -25,6 +25,30 @@ function onKey(e){
 }
 closeButton.addEventListener('click',dismiss);
 backdrop.addEventListener('click',e=>{if(e.target===backdrop)dismiss()});
+// Brevo redirects here only after its double-opt-in confirmation link has been processed.
+if(params.get('newsletter')==='confirmed'){
+ const content=widget.querySelector('.yfc-newsletter-inner');
+ if(content){
+  content.replaceChildren();
+  const eyebrow=document.createElement('p');
+  eyebrow.className='yfc-newsletter-overline';
+  eyebrow.textContent='A LITTLE FASHION IN YOUR INBOX';
+  const heading=document.createElement('h2');
+  heading.id='yfc-newsletter-title';
+  heading.textContent="YOU'RE ON THE LIST!";
+  const message=document.createElement('p');
+  message.textContent='Your subscription is confirmed. Welcome to THE YFC LETTER. Your first fashion love letter is on its way.';
+  content.append(eyebrow,heading,message);
+ }
+ previousFocus=document.activeElement;
+ backdrop.hidden=false;
+ widget.hidden=false;
+ document.body.classList.add('yfc-popup-open');
+ closeButton.focus();
+ document.addEventListener('keydown',onKey);
+ try{localStorage.setItem(KEY,String(Date.now()+30*24*60*60*1000))}catch{}
+ return;
+}
 let suppressed=false;try{suppressed=Number(localStorage.getItem(KEY)||0)>Date.now()}catch{}
 if(!suppressed){
  window.setTimeout(()=>{previousFocus=document.activeElement;backdrop.hidden=false;widget.hidden=false;document.body.classList.add('yfc-popup-open');closeButton.focus();document.addEventListener('keydown',onKey)},1200);
