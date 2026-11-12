@@ -15,4 +15,4 @@ export async function onRequestPost({request,env}) {
  return json({ok:true});
  }catch(err){console.error('Newsletter connection failed',err);return json({error:'Subscription is temporarily unavailable.'},502)}
 }
-export async function onRequestGet(){return new Response('Method not allowed',{status:405})}
+export async function onRequestGet({env}){const enabled=Boolean(env.BREVO_API_KEY&&env.BREVO_LIST_ID&&env.BREVO_DOI_TEMPLATE_ID);return new Response(JSON.stringify({enabled}),{headers:{'content-type':'application/json','cache-control':'no-store'}})}
