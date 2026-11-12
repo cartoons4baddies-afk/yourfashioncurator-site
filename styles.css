@@ -357,3 +357,23 @@ body.yfc-popup-open{overflow:hidden}
  .yfc-newsletter-backdrop .yfc-newsletter-controls input{font-size:16px}
  .yfc-newsletter-backdrop .yfc-newsletter-consent{font-size:10px}
 }
+
+/* THE SHOP / curated folders with touch-friendly horizontal discovery. */
+.shop-folders-section{margin:24px 0 48px;min-width:0}
+.shop-folders-intro{border:1px solid #d0a3b8;background:#f8e5ed;padding:clamp(20px,4vw,38px);text-align:center}
+.shop-folders-intro>span,.shop-folder-heading small{display:block;font:700 10px 'DM Sans',sans-serif;letter-spacing:.19em;color:#86536c}
+.shop-folders-intro h2{font:normal clamp(35px,6vw,64px)/1.05 Anton,Impact,sans-serif;margin:13px 0;color:#44283a}
+.shop-folders-intro p{font:italic clamp(14px,2vw,18px)/1.65 'Playfair Display',Georgia,serif;color:#754b64;margin:0 auto;max-width:510px}
+.shop-folder-nav{display:flex;gap:10px;overflow-x:auto;padding:18px 2px 22px;scrollbar-width:thin;scroll-snap-type:x proximity}
+.shop-folder-link{white-space:nowrap;flex:none;text-decoration:none;color:#432638;border:1px solid #b985a0;background:#fff4f8;padding:11px 16px;font:700 11px 'DM Sans',sans-serif;letter-spacing:.05em;scroll-snap-align:start}
+.shop-folder-link:hover,.shop-folder-link:focus-visible{background:#432638;color:#fff}
+.shop-folder-link span{opacity:.65;margin-left:8px}
+.shop-folder{min-width:0;scroll-margin-top:18px;margin:15px 0 38px}
+.shop-folder-heading{display:flex;align-items:end;justify-content:space-between;gap:14px;border-bottom:1px solid #bc90a8;margin-bottom:17px;padding-bottom:11px}
+.shop-folder-heading h2{font:normal clamp(29px,4vw,45px) Anton,Impact,sans-serif;margin:6px 0 0;color:#432638}
+.shop-folder-heading>span{font:700 9px 'DM Sans',sans-serif;letter-spacing:.1em;color:#805970;text-align:right;padding-bottom:5px}
+.shop-folder-rail{display:flex;gap:clamp(13px,2vw,24px);overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:#bc90a8 transparent;padding:0 3px 17px}
+.shop-folder-rail .shop-product{flex:0 0 clamp(165px,32%,242px);scroll-snap-align:start}
+.shop-folder-rail .shop-product-photo{aspect-ratio:3/4}
+.shop-folder-rail:focus-visible{outline:2px solid #86536c;outline-offset:3px}
+@media(max-width:640px){.shop-folders-intro{padding:24px 16px}.shop-folder-heading>span{max-width:110px;line-height:1.5}.shop-folder-rail .shop-product{flex-basis:min(63vw,230px)}.shop-folder-nav{gap:8px}.shop-folder-link{padding:10px 12px}}
