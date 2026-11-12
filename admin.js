@@ -6,7 +6,7 @@ const configured=!!db;
 let rows=[],currentId=null,blocks=[],coverUrl='',savedSettings={},productId=null;
 let cropX=50,cropY=50;
 const categoryOptions=CATS.map(([v,l])=>'<option value="'+v+'">'+esc(l)+'</option>').join('');$('post-category').innerHTML=categoryOptions;
-function pane(name){for(const p of ['posts','editor','products','product-editor','settings'])$(p+'-pane').hidden=(p!==name);msg('')}
+function pane(name){for(const p of ['posts','editor','products','product-editor','settings','analytics'])$(p+'-pane').hidden=(p!==name);msg('')}
 if(!configured){$('auth-msg').textContent='Before using the editor, connect a Supabase project in config.js (see README).';$('login-form').querySelector('button').disabled=true;return;}
 async function checkEditor(){const {data:s}=await db.auth.getSession();if(!s.session){$('auth-box').hidden=false;$('workspace').hidden=true;return}
 const {data,error}=await db.from('editors').select('user_id').eq('user_id',s.session.user.id).maybeSingle();if(error||!data){$('auth-msg').textContent='This account is not authorized as an editor. Add your user ID to the editors table (see README).';await db.auth.signOut();$('auth-box').hidden=false;return;}
@@ -29,8 +29,47 @@ $('login-form').addEventListener('submit',async e=>{
 $('logout').addEventListener('click',async()=>{await db.auth.signOut();location.reload()});
 $('posts-tab').addEventListener('click',async()=>{pane('posts');await loadPosts()});$('settings-tab').addEventListener('click',async()=>{pane('settings');await loadSettings()});
 $('products-tab').addEventListener('click',()=>{pane('products');renderProductList()});$('new-product').addEventListener('click',()=>openProductEditor(null));$('cancel-product').addEventListener('click',()=>{pane('products');renderProductList()});
+$('analytics-tab').addEventListener('click',async()=>{pane('analytics');await refreshAnalytics()});
+$('analytics-refresh').addEventListener('click',refreshAnalytics);
 $('new-post').addEventListener('click',()=>openEditor(null));$('cancel-edit').addEventListener('click',()=>pane('posts'));
 async function loadPosts(){const {data,error}=await db.from('posts').select('*').order('updated_at',{ascending:false});if(error){msg(error.message);return;}rows=data||[];renderList()}
+
+async function refreshAnalytics(){
+ const status=$('analytics-updated');
+ status.textContent='Refreshing publishing information…';
+ const {data,error}=await db.from('posts').select('id,title,slug,category,status,published_at,blocks,updated_at').order('updated_at',{ascending:false});
+ if(error){status.textContent='Could not load analytics: '+error.message;return;}
+ const all=data||[];
+ const isProduct=p=>Array.isArray(p.blocks)&&p.blocks.some(b=>b.type==='affiliate-listing');
+ const articles=all.filter(p=>!isProduct(p));
+ const products=all.filter(isProduct);
+ const published=articles.filter(p=>p.status==='published');
+ const active=products.filter(p=>p.status==='published');
+ const sevenDays=Date.now()-7*86400000;
+ const last7=published.filter(p=>p.published_at&&new Date(p.published_at).getTime()>=sevenDays);
+ const metric=(name,num,desc)=>'<div class="yfc-analytics-metric"><small>'+esc(name)+'</small><strong>'+num+'</strong><span>'+esc(desc)+'</span></div>';
+ $('analytics-metrics').innerHTML=[
+  metric('PUBLISHED ARTICLES',published.length,'Live editorial stories'),
+  metric('LAST 7 DAYS',last7.length,'Newly published stories'),
+  metric('LIVE SHOP PRODUCTS',active.length,'Published affiliate listings'),
+  metric('DRAFTS',all.filter(p=>p.status==='draft').length,'Unpublished items')
+ ].join('');
+ const recent=[...published].sort((a,b)=>new Date(b.published_at||0)-new Date(a.published_at||0)).slice(0,6);
+ $('analytics-recent').innerHTML=recent.length?recent.map(p=>{
+  const href='https://yourfashioncurator-site.pages.dev/?section='+encodeURIComponent(p.category)+'&post='+encodeURIComponent(p.slug);
+  const date=p.published_at?new Date(p.published_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'Published';
+  return '<a class="yfc-analytics-item" href="'+href+'" target="_blank" rel="noopener noreferrer"><strong>'+esc(p.title)+'</strong><small>'+esc(date)+' · '+esc(p.category)+' ↗</small></a>';
+ }).join(''):'<p class="hint">No published articles yet.</p>';
+ const folders=new Map();
+ for(const p of active){
+  const info=p.blocks.find(b=>b.type==='affiliate-listing')||{};
+  const folder=String(info.folder||'').trim()||'Unsorted Finds';
+  folders.set(folder,(folders.get(folder)||0)+1);
+ }
+ $('analytics-folders').innerHTML=folders.size?[...folders.entries()].sort((a,b)=>b[1]-a[1]).map(([name,count])=>'<div class="yfc-analytics-item yfc-analytics-folder"><strong>'+esc(name)+'</strong><small>'+count+' live product'+(count===1?'':'s')+'</small></div>').join(''):'<p class="hint">No published shop products yet.</p>';
+ status.textContent='Updated '+new Date().toLocaleString('en-GB',{dateStyle:'medium',timeStyle:'short'})+' · Data from Supabase';
+}
+
 function isAffiliateProduct(p){return Array.isArray(p?.blocks)&&p.blocks.some(b=>b.type==='affiliate-listing')}
 function renderList(){const articles=rows.filter(p=>!isAffiliateProduct(p));$('admin-post-list').innerHTML=articles.length?articles.map(p=>'<div class="manager-item"><div><strong>'+esc(p.title||'Untitled')+'</strong><small>'+esc(CATS.find(c=>c[0]===p.category)?.[1]||'')+' / '+esc(p.status)+' / '+(p.featured?'PINNED / ':'')+new Date(p.updated_at).toLocaleDateString('en-GB')+'</small></div><div><button class="outline-btn" data-edit="'+p.id+'">EDIT</button></div></div>').join(''):'<div class="empty-journal"><h2>THE ARCHIVE IS EMPTY</h2><p>Create your first article when you are ready.</p></div>';document.querySelectorAll('[data-edit]').forEach(btn=>btn.onclick=()=>openEditor(rows.find(p=>p.id===btn.dataset.edit)))}
 
