@@ -39,9 +39,9 @@ function display(){
 }
 function kind(headers){
  const has=v=>headers.includes(v);
- if(has('date')&&has('clicks')&&has('impressions'))return 'chart';
- if((has('topqueries')||has('query')||has('requete')||has('requetes'))&&has('clicks'))return 'queries';
- if((has('toppages')||has('page')||has('pages'))&&has('clicks'))return 'pages';
+ if(has('date')&&(has('clicks')||has('clics'))&&has('impressions'))return 'chart';
+ if((has('topqueries')||has('query')||has('requete')||has('requetes')||has('principalesrequetes'))&&(has('clicks')||has('clics')))return 'queries';
+ if((has('toppages')||has('page')||has('pages')||has('principalespages'))&&(has('clicks')||has('clics')))return 'pages';
  return null;
 }
 function parseFile(content){
@@ -49,7 +49,7 @@ function parseFile(content){
  const headers=grid[0].map(normalize);
  const type=kind(headers);if(!type)throw Error('This CSV is not a Search Console Chart, Queries or Pages export (English/French headers expected).');
  const ix=k=>headers.indexOf(k),field=(row,k)=>ix(k)>=0?row[ix(k)]:'';
- const clicksRow=row=>n(field(row,'clicks')),impressionsRow=row=>n(field(row,'impressions'));
+ const clicksRow=row=>n(field(row,'clicks')||field(row,'clics')),impressionsRow=row=>n(field(row,'impressions'));
  const clicksTotal=grid.slice(1).reduce((s,r)=>s+(Number.isFinite(clicksRow(r))?clicksRow(r):0),0);
  const impressionsTotal=grid.slice(1).reduce((s,r)=>s+(Number.isFinite(impressionsRow(r))?impressionsRow(r):0),0);
  const valid=grid.slice(1).filter(r=>Number.isFinite(clicksRow(r))&&Number.isFinite(impressionsRow(r)));
@@ -59,7 +59,7 @@ function parseFile(content){
   const position=totalImpressions?valid.reduce((s,r)=>s+n(field(r,'position'))*impressionsRow(r),0)/totalImpressions:0;
   return {type,totals:{clicks:clicksTotal,impressions:impressionsTotal,ctr:impressionsTotal?100*clicksTotal/impressionsTotal:0,position}};
  }
- const idIdx=type==='queries'?headers.findIndex(h=>['topqueries','query','requete','requetes'].includes(h)):headers.findIndex(h=>['toppages','page','pages'].includes(h));
+ const idIdx=type==='queries'?headers.findIndex(h=>['topqueries','query','requete','requetes','principalesrequetes'].includes(h)):headers.findIndex(h=>['toppages','page','pages','principalespages'].includes(h));
  return {type,items:valid.map(r=>({name:r[idIdx]||'',clicks:clicksRow(r),impressions:impressionsRow(r)})).filter(r=>r.name).sort((a,b)=>b.clicks-a.clicks)};
 }
 async function init(){
