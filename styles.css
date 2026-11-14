@@ -441,12 +441,3 @@ a.yfc-analytics-item:hover strong{text-decoration:underline}
 .yfc-affiliate-inputs input,.yfc-affiliate-inputs select{min-width:0;width:100%;border:1px solid #c79baf;padding:10px;background:#fff}
 .yfc-affiliate-links{margin-top:16px}
 @media(max-width:650px){.yfc-affiliate-inputs{grid-template-columns:minmax(0,1.4fr) minmax(90px,.8fr)}}
-
-/* Official Tenor embed, kept in the same logo-sized slot as the former animated diamond. */
-.yfc-diamond-embed{display:block;position:relative;width:59px;height:59px;flex:0 0 59px;overflow:hidden;isolation:isolate}
-.yfc-diamond-embed .yfc-diamond-fallback{display:block;width:100%;height:100%;object-fit:contain}
-.yfc-diamond-embed .tenor-gif-embed{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;margin:0!important;overflow:hidden!important;pointer-events:none}
-.yfc-diamond-embed .tenor-gif-embed iframe{display:block!important;width:100%!important;height:100%!important;max-width:none!important;border:0!important;pointer-events:none}
-.identity .yfc-diamond-embed,.admin-brand .yfc-diamond-embed{filter:drop-shadow(0 1px 3px #542f48)}
-@media(max-width:600px){.yfc-diamond-embed{width:48px;height:48px;flex-basis:48px}}
-@media(prefers-reduced-motion:reduce){.yfc-diamond-embed .tenor-gif-embed{display:none!important}}
