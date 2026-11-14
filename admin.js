@@ -6,7 +6,7 @@ const configured=!!db;
 let rows=[],currentId=null,blocks=[],coverUrl='',savedSettings={},productId=null;
 let cropX=50,cropY=50;
 const categoryOptions=CATS.map(([v,l])=>'<option value="'+v+'">'+esc(l)+'</option>').join('');$('post-category').innerHTML=categoryOptions;
-function pane(name){for(const p of ['posts','editor','products','product-editor','settings','analytics'])$(p+'-pane').hidden=(p!==name);msg('')}
+function pane(name){for(const p of ['posts','editor','products','product-editor','settings','analytics','calendar'])$(p+'-pane').hidden=(p!==name);msg('')}
 if(!configured){$('auth-msg').textContent='Before using the editor, connect a Supabase project in config.js (see README).';$('login-form').querySelector('button').disabled=true;return;}
 async function checkEditor(){const {data:s}=await db.auth.getSession();if(!s.session){$('auth-box').hidden=false;$('workspace').hidden=true;return}
 const {data,error}=await db.from('editors').select('user_id').eq('user_id',s.session.user.id).maybeSingle();if(error||!data){$('auth-msg').textContent='This account is not authorized as an editor. Add your user ID to the editors table (see README).';await db.auth.signOut();$('auth-box').hidden=false;return;}
