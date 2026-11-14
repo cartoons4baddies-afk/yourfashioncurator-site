@@ -43,11 +43,21 @@ export async function onRequestGet({request,env}){
   const roles=await roleResponse.json();
   if(!Array.isArray(roles)||!roles.some(role=>role.user_id===user.id))
    return json({error:'Only authorized editors can access analytics.'},403);
+  // Distinguish invalid credentials from an invalid analytics GraphQL query.
+  // Runs only after the caller is confirmed as an authorized editor.
+  const token=String(CF_ANALYTICS_TOKEN).trim();
+  const verifyResponse=await fetch('https://api.cloudflare.com/client/v4/user/tokens/verify',{
+   headers:{'Authorization':'Bearer '+token,'Accept':'application/json'}
+  });
+  const verification=await verifyResponse.json().catch(()=>null);
+  if(!verifyResponse.ok || verification?.success===false || verification?.result?.status!=='active'){
+   return json({error:'Cloudflare API token verification failed. Check the encrypted CF_ANALYTICS_TOKEN secret, its expiration and account scope.',stage:'token-verification',httpStatus:verifyResponse.status},502);
+  }
   const now=new Date(),end=now.toISOString();
   const begin=new Date(now.getTime()-7*86400000).toISOString();
   const host='yourfashioncurator-site.pages.dev';
   const result=await fetch('https://api.cloudflare.com/client/v4/graphql',{
-   method:'POST',headers:{'Authorization':'Bearer '+CF_ANALYTICS_TOKEN,'Content-Type':'application/json'},
+   method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
    body:JSON.stringify({query,variables:{account:CF_ACCOUNT_ID,start:begin,end,host}})
   });
   const responseText=await result.text();
