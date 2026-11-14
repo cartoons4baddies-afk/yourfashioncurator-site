@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>YOURFASHIONCURATOR — Editor</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap"><link rel="stylesheet" href="styles.css?v=yfc-calendar-v1"></head><body class="admin-body">
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>YOURFASHIONCURATOR — Editor</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap"><link rel="stylesheet" href="styles.css?v=yfc-todo-v2"></head><body class="admin-body">
 <header class="admin-head"><a href="./index.html" class="admin-brand" aria-label="Yourfashioncurator home"><img src="diamond-test-clean.gif" alt=""/><span>YOURFASHIONCURATOR</span></a><span>THE EDITOR'S ROOM</span><button id="logout" class="text-btn" hidden>SIGN OUT</button></header>
 <main class="admin-main"><section class="admin-auth" id="auth-box"><h1>EDITOR LOGIN</h1><p>Private access to your journal.</p><form id="login-form"><label>Email<input type="email" id="email" autocomplete="username" required></label><label>Password<input type="password" id="password" autocomplete="current-password" required></label><button class="solid-btn" type="submit">SIGN IN</button></form><p class="feedback" id="auth-msg" role="status"></p></section>
 <section id="workspace" hidden><div class="admin-controls"><button class="solid-btn" id="new-post">+ NEW ARTICLE</button><button class="outline-btn" id="posts-tab">MY ARTICLES</button><button class="outline-btn" id="products-tab">AFFILIATE PRODUCTS</button><button class="outline-btn" id="settings-tab">HOMEPAGE & LINKS</button><button class="outline-btn" id="analytics-tab">YFC ANALYTICS</button><button class="outline-btn" id="calendar-tab">CONTENT CALENDAR</button><a href="https://yourfashioncurator-site.pages.dev/" class="outline-btn" title="Open the same public site your visitors see">VIEW PUBLIC SITE</a></div>
@@ -103,37 +103,31 @@
 <p class="yfc-analytics-footnote">Publishing counts are not page views. Link clicks are not verified purchases. No visitor tracking is added by this dashboard.</p>
 </section>
 <section id="calendar-pane" hidden>
-<div class="admin-section-title"><h1>YFC CONTENT CALENDAR</h1><span>YOUR EDITORIAL PLANNER</span></div>
-<p class="hint">Plan website articles, Instagram posts, TikTok videos, Pinterest, and The YFC Letter. This is a private planning calendar; marking something Scheduled does not automatically publish it.</p>
-<div id="calendar-unavailable" class="calendar-alert" role="alert" hidden></div>
+<div class="admin-section-title"><h1>YFC TO-DO CALENDAR</h1><span>YOUR PRIVATE PLANNER</span></div>
+<p class="hint">A simple to-do list on a calendar. Add tasks, tick them off and move them to another date. Nothing is imported from your published articles or social accounts.</p>
+<div id="calendar-unavailable" class="calendar-alert" hidden role="alert"></div>
 <div class="calendar-toolbar">
-<button type="button" class="outline-btn" id="calendar-prev" aria-label="Previous month">←</button><h2 id="calendar-month">NOVEMBER 2026</h2><button type="button" class="outline-btn" id="calendar-next" aria-label="Next month">→</button>
+<button type="button" class="outline-btn" id="calendar-prev" aria-label="Previous month">←</button><h2 id="calendar-month"></h2><button type="button" class="outline-btn" id="calendar-next" aria-label="Next month">→</button>
 <button type="button" class="outline-btn" id="calendar-today">TODAY</button><span id="calendar-total"></span>
-<button type="button" class="outline-btn" id="calendar-reload">REFRESH</button><button type="button" class="solid-btn" id="calendar-new">+ ADD CONTENT</button>
+<button type="button" class="outline-btn" id="calendar-reload">REFRESH</button><button type="button" class="solid-btn" id="calendar-new">+ NEW TASK</button>
 </div>
 <div class="calendar-weekdays" aria-hidden="true"><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span></div>
-<div id="calendar-days" class="calendar-month-grid" aria-label="Editorial calendar month"></div>
+<div id="calendar-days" class="calendar-month-grid" aria-label="To-do calendar"></div>
 <div class="calendar-detail">
-<div class="calendar-detail-head"><h2 id="calendar-selected">SELECT A DAY</h2><button type="button" class="solid-btn" id="calendar-add-date">+ ADD FOR THIS DAY</button></div>
+<div class="calendar-detail-head"><h2 id="calendar-selected"></h2><button type="button" class="solid-btn" id="calendar-add-date">+ ADD TASK</button></div>
 <div id="calendar-day-list"></div>
 </div>
 <form id="calendar-form" class="calendar-form" hidden>
-<div class="calendar-detail-head"><h2 id="calendar-form-title">ADD CONTENT</h2><button type="button" class="outline-btn" id="calendar-cancel">CLOSE</button></div>
+<div class="calendar-detail-head"><h2 id="calendar-form-title">ADD TASK</h2><button type="button" class="outline-btn" id="calendar-cancel">CLOSE</button></div>
 <input id="calendar-id" type="hidden">
-<label>CONTENT TITLE<input id="calendar-title-input" required maxlength="180" placeholder="A campaign that deserves to be remembered — EP. 02"></label>
-<div class="calendar-field-grid">
-<label>PLANNED DATE & TIME<input id="calendar-date-input" type="datetime-local" required></label>
-<label>PLATFORM<select id="calendar-channel"><option>Website</option><option>Instagram</option><option>TikTok</option><option>Pinterest</option><option>Newsletter</option><option>Other</option></select></label>
-<label>FORMAT / SERIES<input id="calendar-type" maxlength="80" placeholder="Editorial, Reel, Carousel, Curating TV Fashion"></label>
-<label>STATUS<select id="calendar-status"><option>Idea</option><option>Draft</option><option>In progress</option><option>Scheduled</option><option>Published</option></select></label>
-</div>
-<label>CAMPAIGN OR COLLECTION<input id="calendar-campaign" maxlength="120" placeholder="Spring 2027, Brand Discovery…"></label>
-<label>NOTES<textarea id="calendar-notes" maxlength="2500" rows="3" placeholder="Creative concept, credits, references, caption ideas…"></textarea></label>
-<label>POST / DRAFT LINK (OPTIONAL)<input id="calendar-url" type="url" maxlength="600" placeholder="https://…"></label>
-<div class="editor-actions"><button type="submit" class="solid-btn" id="calendar-save">SAVE CONTENT</button><button type="button" class="outline-btn danger" id="calendar-delete" hidden>DELETE</button></div>
+<label>TO DO<input id="calendar-title-input" required maxlength="180" placeholder="Prepare the next Curating TV Fashion post"></label>
+<label>DATE<input id="calendar-date-input" type="date" required></label>
+<label>NOTES (OPTIONAL)<textarea id="calendar-notes" maxlength="2500" rows="3" placeholder="Ideas, reminders, things to prepare…"></textarea></label>
+<label class="calendar-done-label"><input type="checkbox" id="calendar-done"> COMPLETED</label>
+<div class="editor-actions"><button type="submit" class="solid-btn" id="calendar-save">SAVE TASK</button><button type="button" class="outline-btn danger" id="calendar-delete" hidden>DELETE</button></div>
 </form>
 <p class="feedback" id="calendar-feedback" role="status"></p>
 </section>
 <section id="settings-pane" hidden><div class="admin-section-title"><h1>YOUR HOMEPAGE</h1><span>FIXED CONTENT & LINKS</span></div><form id="settings-form" class="settings-form"><label>Magazine introduction (optional)<textarea id="setting-intro" rows="3" placeholder="Your personal editorial note"></textarea></label><label>About Me (sidebar)<textarea id="setting-about" rows="4" placeholder="A short introduction to you"></textarea></label><label>Instagram URL<input id="setting-instagram" type="url" placeholder="https://instagram.com/..."></label><label>TikTok URL<input id="setting-tiktok" type="url" placeholder="https://tiktok.com/@..."></label><label>Pinterest URL<input id="setting-pinterest" type="url" placeholder="https://www.pinterest.com/yourusername/"></label><label>Contact email<input id="setting-email" type="email" placeholder="hello@example.com"></label><button class="solid-btn" type="submit">SAVE HOMEPAGE</button></form></section>
 </section></main>
-<script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="shared.js?v=tv-fashion-v1"></script><script src="admin.js?v=tv-fashion-v1"></script><script src="cloudflare-live.js?v=2"></script><script src="editorial-calendar.js?v=1"></script><script src="diamond-logo.js?v=transparent-v1"></script></body></html>
+<script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="shared.js?v=tv-fashion-v1"></script><script src="admin.js?v=tv-fashion-v1"></script><script src="cloudflare-live.js?v=2"></script><script src="editorial-calendar.js?v=todo-v2"></script><script src="diamond-logo.js?v=transparent-v1"></script></body></html>
