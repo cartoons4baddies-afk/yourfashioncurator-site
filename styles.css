@@ -441,3 +441,38 @@ a.yfc-analytics-item:hover strong{text-decoration:underline}
 .yfc-affiliate-inputs input,.yfc-affiliate-inputs select{min-width:0;width:100%;border:1px solid #c79baf;padding:10px;background:#fff}
 .yfc-affiliate-links{margin-top:16px}
 @media(max-width:650px){.yfc-affiliate-inputs{grid-template-columns:minmax(0,1.4fr) minmax(90px,.8fr)}}
+
+/* Private YFC Content Calendar */
+.calendar-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:25px 0 15px}
+.calendar-toolbar h2{font:normal clamp(24px,3vw,35px)/1 Anton,Impact,sans-serif;min-width:175px;text-align:center;margin:0;color:#402638}
+#calendar-total{font:700 10px 'DM Sans',sans-serif;color:#916077;letter-spacing:.1em;margin:0 auto 0 5px}
+.calendar-weekdays,.calendar-month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.calendar-weekdays span{background:#e8cbd9;border:1px solid #d2a5bc;padding:12px 5px;text-align:center;font:700 10px 'DM Sans',sans-serif;letter-spacing:.1em}
+.calendar-month-grid{border-left:1px solid #d2a5bc;border-top:1px solid #d2a5bc}
+.yfc-calendar-day{font:12px 'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:stretch;text-align:left;gap:6px;background:#fff9fc;color:#4a2b3d;border:0;border-bottom:1px solid #d2a5bc;border-right:1px solid #d2a5bc;min-width:0;min-height:110px;padding:9px;cursor:pointer}
+.yfc-calendar-day:hover,.yfc-calendar-day:focus-visible{background:#f5e1ea;outline:2px solid #a76f8c;outline-offset:-2px}
+.yfc-calendar-day.outside{background:#f4e9ef;color:#aa95a1}
+.yfc-calendar-day.today .day-number{background:#4a293e;color:#fff;border-radius:50%}
+.yfc-calendar-day .day-number{font-size:12px;font-weight:700;width:25px;height:25px;display:grid;place-items:center}
+.calendar-dotline{display:flex;min-width:0;align-items:center;gap:5px;font:500 10px 'DM Sans',sans-serif;line-height:1.35}
+.calendar-dotline>span{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.calendar-dot{display:inline-block;flex:0 0 7px;width:7px;height:7px;border-radius:50%;background:#bd7095}
+.calendar-dot.channel-website{background:#523343}
+.calendar-dot.channel-instagram{background:#c6719c}
+.calendar-dot.channel-tiktok{background:#7f6d91}
+.calendar-dot.channel-pinterest{background:#a94e62}
+.calendar-dot.channel-newsletter{background:#9c9c62}
+.yfc-calendar-day>small{font:9px 'DM Sans',sans-serif;color:#916077}
+.calendar-detail,.calendar-form{margin:24px 0;border:1px solid #d2a5bc;background:#fff7fb;padding:clamp(15px,3vw,25px)}
+.calendar-detail-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 15px}
+.calendar-detail-head h2{font:normal clamp(22px,3vw,31px) Anton,Impact,sans-serif;margin:0;color:#4a293e}
+.calendar-list-item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 0;border-top:1px solid #ebd3dd}
+.calendar-list-item>div{display:flex;flex-direction:column;gap:6px;min-width:0}
+.calendar-list-item strong{font:600 13px/1.5 'DM Sans',sans-serif}
+.calendar-list-item small{font:11px 'DM Sans',sans-serif;color:#806077}
+.calendar-alert{padding:14px;background:#fce3ea;border:1px solid #c97588;color:#833b4c;font:13px/1.6 'DM Sans',sans-serif}
+.calendar-form{max-width:800px}
+.calendar-form>label,.calendar-field-grid>label{display:flex;flex-direction:column;gap:7px;font:700 11px 'DM Sans',sans-serif;letter-spacing:.04em;color:#5b3a4d;margin:13px 0}
+.calendar-form input,.calendar-form textarea,.calendar-form select{border:1px solid #c79baf;background:white;border-radius:0;max-width:100%;min-width:0;padding:11px;color:#43263a;font:13px 'DM Sans',sans-serif}
+.calendar-field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}
+@media(max-width:690px){.calendar-toolbar h2{min-width:145px}.yfc-calendar-day{min-height:66px;padding:5px;gap:3px}.calendar-dotline{font-size:0}.calendar-dotline>span{display:none}.calendar-dotline .calendar-dot{width:8px;height:8px;flex-basis:8px}.calendar-dotline{display:inline-flex;margin-right:3px}.calendar-weekdays span{padding:9px 0;font-size:9px}.calendar-field-grid{grid-template-columns:1fr}}
