@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>YOURFASHIONCURATOR — Editor</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap"><link rel="stylesheet" href="styles.css?v=yfc-analytics-cloudflare-v3"></head><body class="admin-body">
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>YOURFASHIONCURATOR — Editor</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap"><link rel="stylesheet" href="styles.css?v=yfc-live-v4"></head><body class="admin-body">
 <header class="admin-head"><a href="./index.html" class="admin-brand" aria-label="Yourfashioncurator home"><img src="diamond-test-clean.gif" alt=""/><span>YOURFASHIONCURATOR</span></a><span>THE EDITOR'S ROOM</span><button id="logout" class="text-btn" hidden>SIGN OUT</button></header>
 <main class="admin-main"><section class="admin-auth" id="auth-box"><h1>EDITOR LOGIN</h1><p>Private access to your journal.</p><form id="login-form"><label>Email<input type="email" id="email" autocomplete="username" required></label><label>Password<input type="password" id="password" autocomplete="current-password" required></label><button class="solid-btn" type="submit">SIGN IN</button></form><p class="feedback" id="auth-msg" role="status"></p></section>
 <section id="workspace" hidden><div class="admin-controls"><button class="solid-btn" id="new-post">+ NEW ARTICLE</button><button class="outline-btn" id="posts-tab">MY ARTICLES</button><button class="outline-btn" id="products-tab">AFFILIATE PRODUCTS</button><button class="outline-btn" id="settings-tab">HOMEPAGE & LINKS</button><button class="outline-btn" id="analytics-tab">YFC ANALYTICS</button><a href="https://yourfashioncurator-site.pages.dev/" class="outline-btn" title="Open the same public site your visitors see">VIEW PUBLIC SITE</a></div>
@@ -61,6 +61,22 @@
 <section class="yfc-analytics-panel"><h2>RECENTLY PUBLISHED</h2><div id="analytics-recent"></div></section>
 <section class="yfc-analytics-panel"><h2>SHOP FOLDERS</h2><div id="analytics-folders"></div></section>
 </div>
+<section class="yfc-analytics-panel yfc-analytics-live">
+<div class="yfc-gsc-panel-head"><div><h2>CLOUDFLARE · LIVE TRAFFIC</h2><p>Automatically refreshed when you open YFC Analytics or press Refresh Data</p></div><span class="yfc-live-marker">AUTO SYNC</span></div>
+<p class="hint" id="cf-live-status" role="status">Connect your Cloudflare read-only API token to activate this panel.</p>
+<div id="cf-live-content" hidden>
+<p class="hint" id="cf-live-period"></p>
+<div class="yfc-analytics-metrics" id="cf-live-metrics"></div>
+<div class="yfc-analytics-columns">
+<div><h3>TOP PAGE PATHS</h3><div id="cf-live-pages"></div></div>
+<div><h3>TRAFFIC SOURCES</h3><div id="cf-live-referrers"></div></div>
+</div>
+<div class="yfc-analytics-columns">
+<div><h3>VISITS BY COUNTRY</h3><div id="cf-live-countries"></div></div>
+<div><h3>DATA NOTES</h3><p class="hint">All pages on your hostname, including private editor traffic. Values come directly from Cloudflare and may update with a delay. Page path totals may omit query parameters; an article-by-article view will need additional tracking.</p></div>
+</div>
+</div>
+</section>
 <section class="yfc-analytics-panel yfc-analytics-cloudflare">
 <div class="yfc-gsc-panel-head"><div><h2>CLOUDFLARE · FIRST TRAFFIC BASELINE</h2><p>Historical snapshot · 13 Nov 2026 02:05 – 14 Nov 2026 02:05 (Europe/Zurich) · not live</p></div><a class="outline-btn" href="https://dash.cloudflare.com/" target="_blank" rel="noopener noreferrer">OPEN CLOUDFLARE</a></div>
 <div class="yfc-analytics-metrics">
@@ -99,4 +115,4 @@
 </section>
 <section id="settings-pane" hidden><div class="admin-section-title"><h1>YOUR HOMEPAGE</h1><span>FIXED CONTENT & LINKS</span></div><form id="settings-form" class="settings-form"><label>Magazine introduction (optional)<textarea id="setting-intro" rows="3" placeholder="Your personal editorial note"></textarea></label><label>About Me (sidebar)<textarea id="setting-about" rows="4" placeholder="A short introduction to you"></textarea></label><label>Instagram URL<input id="setting-instagram" type="url" placeholder="https://instagram.com/..."></label><label>TikTok URL<input id="setting-tiktok" type="url" placeholder="https://tiktok.com/@..."></label><label>Pinterest URL<input id="setting-pinterest" type="url" placeholder="https://www.pinterest.com/yourusername/"></label><label>Contact email<input id="setting-email" type="email" placeholder="hello@example.com"></label><button class="solid-btn" type="submit">SAVE HOMEPAGE</button></form></section>
 </section></main>
-<script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="shared.js?v=tv-fashion-v1"></script><script src="admin.js?v=tv-fashion-v1"></script><script src="analytics-import.js?v=1"></script></body></html>
+<script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="shared.js?v=tv-fashion-v1"></script><script src="admin.js?v=tv-fashion-v1"></script><script src="analytics-import.js?v=1"></script><script src="cloudflare-live.js?v=1"></script></body></html>
