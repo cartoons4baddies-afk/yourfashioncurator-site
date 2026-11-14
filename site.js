@@ -122,7 +122,7 @@ if(postSlug){
 const display=validCategory==='home'?posts:posts.filter(p=>p.category===validCategory);
 const visibleProducts=productsIn(validCategory);
 const fixedIntro=String(settings.intro||'').trim();
-let html=topLine(validCategory==='home'?'THE FRONT PAGE':TITLES[validCategory]);
+let html=validCategory==='home'?'':topLine(TITLES[validCategory]);
 if(validCategory==='home'){
  updateMetadata('Independent Fashion Journal','Fashion archives, predictions, beauty, brand discoveries and collections worth remembering.');
  if(display.length){
