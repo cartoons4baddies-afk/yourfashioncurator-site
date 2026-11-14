@@ -489,7 +489,6 @@ a.yfc-analytics-item:hover strong{text-decoration:underline}
 .calendar-done-label input{width:19px;height:19px;accent-color:#8a4c70}
 
 /* Editorial refinements following the YFC team website review */
-.editorial-letter p{font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.8;font-style:normal;font-weight:400;letter-spacing:0;color:#432c3d}
 .shop-folder-link{font-family:'DM Sans',Arial,sans-serif;font-size:14px;line-height:1.45;font-weight:600;letter-spacing:0;color:#3f2838}
 .shop-folder-heading>span{font-size:11px;line-height:1.5;letter-spacing:.03em;color:#654256}
 .shop-folder-rail .shop-product figcaption,.shop-products-grid .shop-product figcaption{font-family:'DM Sans',Arial,sans-serif;font-style:normal;font-weight:500;font-size:clamp(14px,1.6vw,16px);line-height:1.6;letter-spacing:0;text-align:left;color:#3d2836}
