@@ -7,17 +7,17 @@ const query=`query YFCAnalytics($account: string!, $start: Time!, $end: Time!, $
   accounts(filter: {accountTag: $account}) {
    total: rumPageloadEventsAdaptiveGroups(
     limit: 1, filter: {datetime_geq: $start, datetime_lt: $end, requestHost: $host}
-   ) {count sum {visits} dimensions {requestHost}}
+   ) {count sum {visits}}
    pages: rumPageloadEventsAdaptiveGroups(
     limit: 20, orderBy: [count_DESC],
     filter: {datetime_geq: $start, datetime_lt: $end, requestHost: $host}
    ) {count sum {visits} dimensions {requestPath}}
    referrers: rumPageloadEventsAdaptiveGroups(
-    limit: 15, orderBy: [sum_visits_DESC],
+    limit: 15, orderBy: [count_DESC],
     filter: {datetime_geq: $start, datetime_lt: $end, requestHost: $host}
    ) {count sum {visits} dimensions {refererHost}}
    countries: rumPageloadEventsAdaptiveGroups(
-    limit: 12, orderBy: [sum_visits_DESC],
+    limit: 12, orderBy: [count_DESC],
     filter: {datetime_geq: $start, datetime_lt: $end, requestHost: $host}
    ) {count sum {visits} dimensions {countryName}}
   }
@@ -50,9 +50,13 @@ export async function onRequestGet({request,env}){
    method:'POST',headers:{'Authorization':'Bearer '+CF_ANALYTICS_TOKEN,'Content-Type':'application/json'},
    body:JSON.stringify({query,variables:{account:CF_ACCOUNT_ID,start:begin,end,host}})
   });
-  const payload=await result.json().catch(()=>null);
+  const responseText=await result.text();
+  let payload=null;
+  try{payload=JSON.parse(responseText)}catch{}
   if(!result.ok){
    const details=Array.isArray(payload?.errors)?payload.errors.map(e=>String(e.message||'').slice(0,240)).slice(0,3):[];
+   // Expose validation errors only to the verified editor, never Cloudflare credentials.
+   if(!details.length&&payload?.messages?.length)details.push(...payload.messages.map(m=>String(m.message||'').slice(0,240)).slice(0,2));
    return json({error:'Cloudflare API returned HTTP '+result.status+'. '+(result.status===400?'Query validation failed.':'Check account and token access.'),details},502);
   }
   if(!payload)return json({error:'Cloudflare returned an unreadable response.'},502);
