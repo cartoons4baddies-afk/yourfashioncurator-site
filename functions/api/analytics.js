@@ -2,23 +2,23 @@
 const json=(payload,status=200)=>new Response(JSON.stringify(payload),{
  status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}
 });
-const query=`query YFCAnalytics($account: String!, $start: Date!, $end: Date!, $host: String!) {
+const query=`query YFCAnalytics($account: string!, $start: Time!, $end: Time!, $host: string!) {
  viewer {
   accounts(filter: {accountTag: $account}) {
    total: rumPageloadEventsAdaptiveGroups(
-    limit: 1, filter: {date_geq: $start, date_leq: $end, requestHost: $host}
+    limit: 1, filter: {datetime_geq: $start, datetime_lt: $end, requestHost: $host}
    ) {count sum {visits} dimensions {requestHost}}
    pages: rumPageloadEventsAdaptiveGroups(
     limit: 20, orderBy: [count_DESC],
-    filter: {date_geq: $start, date_leq: $end, requestHost: $host}
+    filter: {datetime_geq: $start, datetime_lt: $end, requestHost: $host}
    ) {count sum {visits} dimensions {requestPath}}
    referrers: rumPageloadEventsAdaptiveGroups(
     limit: 15, orderBy: [sum_visits_DESC],
-    filter: {date_geq: $start, date_leq: $end, requestHost: $host}
+    filter: {datetime_geq: $start, datetime_lt: $end, requestHost: $host}
    ) {count sum {visits} dimensions {refererHost}}
    countries: rumPageloadEventsAdaptiveGroups(
     limit: 12, orderBy: [sum_visits_DESC],
-    filter: {date_geq: $start, date_leq: $end, requestHost: $host}
+    filter: {datetime_geq: $start, datetime_lt: $end, requestHost: $host}
    ) {count sum {visits} dimensions {countryName}}
   }
  }
@@ -43,15 +43,19 @@ export async function onRequestGet({request,env}){
   const roles=await roleResponse.json();
   if(!Array.isArray(roles)||!roles.some(role=>role.user_id===user.id))
    return json({error:'Only authorized editors can access analytics.'},403);
-  const now=new Date(),end=now.toISOString().slice(0,10);
-  const begin=new Date(now.getTime()-6*86400000).toISOString().slice(0,10);
+  const now=new Date(),end=now.toISOString();
+  const begin=new Date(now.getTime()-7*86400000).toISOString();
   const host='yourfashioncurator-site.pages.dev';
   const result=await fetch('https://api.cloudflare.com/client/v4/graphql',{
    method:'POST',headers:{'Authorization':'Bearer '+CF_ANALYTICS_TOKEN,'Content-Type':'application/json'},
    body:JSON.stringify({query,variables:{account:CF_ACCOUNT_ID,start:begin,end,host}})
   });
-  if(!result.ok)return json({error:'Cloudflare API returned HTTP '+result.status+'. Check the token permission.'},502);
-  const payload=await result.json();
+  const payload=await result.json().catch(()=>null);
+  if(!result.ok){
+   const details=Array.isArray(payload?.errors)?payload.errors.map(e=>String(e.message||'').slice(0,240)).slice(0,3):[];
+   return json({error:'Cloudflare API returned HTTP '+result.status+'. '+(result.status===400?'Query validation failed.':'Check account and token access.'),details},502);
+  }
+  if(!payload)return json({error:'Cloudflare returned an unreadable response.'},502);
   if(payload.errors?.length)return json({error:'Cloudflare rejected the analytics query. Check the account and API permissions.',details:payload.errors.map(e=>e.message).slice(0,3)},502);
   const groups=payload.data?.viewer?.accounts;
   if(!Array.isArray(groups)||groups.length!==1)return json({error:'Cloudflare analytics account was not found.'},502);
@@ -61,7 +65,7 @@ export async function onRequestGet({request,env}){
    visits:Number(item.sum?.visits||0),pageViews:Number(item.count||0)
   })):[];
   const overall=a.total?.[0]||{};
-  return json({source:'Cloudflare Web Analytics',period:{start:begin,end,timezone:'UTC',note:'Calendar days (including today), not a rolling 168-hour window.'},retrievedAt:now.toISOString(),
+  return json({source:'Cloudflare Web Analytics',period:{start:begin,end,timezone:'UTC',note:'Rolling last 7 days.'},retrievedAt:now.toISOString(),
    totals:{visits:Number(overall.sum?.visits||0),pageViews:Number(overall.count||0)},
    pages:mapped(a.pages,'requestPath'),
    referrers:mapped(a.referrers,'refererHost'),
