@@ -476,3 +476,14 @@ a.yfc-analytics-item:hover strong{text-decoration:underline}
 .calendar-form input,.calendar-form textarea,.calendar-form select{border:1px solid #c79baf;background:white;border-radius:0;max-width:100%;min-width:0;padding:11px;color:#43263a;font:13px 'DM Sans',sans-serif}
 .calendar-field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}
 @media(max-width:690px){.calendar-toolbar h2{min-width:145px}.yfc-calendar-day{min-height:66px;padding:5px;gap:3px}.calendar-dotline{font-size:0}.calendar-dotline>span{display:none}.calendar-dotline .calendar-dot{width:8px;height:8px;flex-basis:8px}.calendar-dotline{display:inline-flex;margin-right:3px}.calendar-weekdays span{padding:9px 0;font-size:9px}.calendar-field-grid{grid-template-columns:1fr}}
+
+/* YFC simple to-do calendar */
+.yfc-calendar-day.selected{outline:2px solid #905675;outline-offset:-2px;background:#f9e5ef}
+.calendar-task-wrap{display:flex!important;align-items:flex-start;flex-direction:row!important;gap:12px;min-width:0;flex:1}
+.calendar-task-wrap>input[type=checkbox]{flex:0 0 19px;width:19px;height:19px;margin:2px 0 0;accent-color:#8a4c70;cursor:pointer}
+.calendar-task-wrap>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.calendar-list-item.task-completed strong{text-decoration:line-through;color:#998393}
+.calendar-dot.is-done{background:#92a998}
+.calendar-dotline.is-done>span{text-decoration:line-through;opacity:.65}
+.calendar-done-label{flex-direction:row!important;align-items:center;gap:10px!important}
+.calendar-done-label input{width:19px;height:19px;accent-color:#8a4c70}
