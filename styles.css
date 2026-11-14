@@ -430,3 +430,14 @@ a.yfc-analytics-item:hover strong{text-decoration:underline}
 .yfc-analytics-live h3{font:700 11px 'DM Sans',sans-serif;letter-spacing:.12em;color:#78556a;margin:15px 0 8px}
 .yfc-live-marker{display:inline-block;border:1px solid #92ad9b;color:#386149;background:#e4f1e7;padding:7px 11px;font:700 10px 'DM Sans',sans-serif;letter-spacing:.09em;white-space:nowrap}
 .yfc-analytics-live .yfc-analytics-metric strong{font-size:clamp(26px,3.3vw,42px)}
+
+/* Brevo newsletter + optional manual affiliate balances */
+.yfc-quick-numbers .yfc-analytics-metrics{margin:18px 0}
+.yfc-quick-numbers .yfc-analytics-metric strong{font-size:clamp(27px,3.2vw,42px)}
+.yfc-affiliate-edit{margin:18px 0;padding:15px;border:1px solid #d8b5c5;background:#fff9fb}
+.yfc-affiliate-edit summary{cursor:pointer;font:700 11px 'DM Sans',sans-serif;letter-spacing:.08em;color:#553044}
+.yfc-affiliate-inputs{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(95px,.7fr) minmax(0,1.5fr) minmax(95px,.7fr);gap:12px;margin:15px 0}
+.yfc-affiliate-inputs label{font:700 11px 'DM Sans',sans-serif;color:#644658;display:flex;flex-direction:column;gap:7px}
+.yfc-affiliate-inputs input,.yfc-affiliate-inputs select{min-width:0;width:100%;border:1px solid #c79baf;padding:10px;background:#fff}
+.yfc-affiliate-links{margin-top:16px}
+@media(max-width:650px){.yfc-affiliate-inputs{grid-template-columns:minmax(0,1.4fr) minmax(90px,.8fr)}}
