@@ -24,7 +24,7 @@ async function refreshCloudflare(){
   if(error||!data?.session?.access_token)throw Error('Sign in to the editor first.');
   const response=await fetch('/api/analytics',{headers:{Authorization:'Bearer '+data.session.access_token},cache:'no-store'});
   const payload=await response.json();
-  if(!response.ok)throw Error(payload.error||'Analytics API is unavailable.');
+  if(!response.ok)throw Error((payload.error||'Analytics API is unavailable.')+(Array.isArray(payload.details)&&payload.details.length?' — '+payload.details.join(' | '):''));
   const metric=(title,value,description)=>{
    const outer=document.createElement('div'),small=document.createElement('small'),strong=document.createElement('strong'),detail=document.createElement('span');
    outer.className='yfc-analytics-metric';small.textContent=title;strong.textContent=num.format(value);detail.textContent=description;
@@ -39,7 +39,7 @@ async function refreshCloudflare(){
   ranking('cf-live-pages',payload.pages,'pageViews');
   ranking('cf-live-referrers',payload.referrers,'visits');
   ranking('cf-live-countries',payload.countries,'visits');
-  $('cf-live-period').textContent=payload.period.start+' to '+payload.period.end+' (UTC calendar days) · Updated '+new Date(payload.retrievedAt).toLocaleString('en-GB');
+  $('cf-live-period').textContent=payload.period.start+' to '+payload.period.end+' (rolling period) · Updated '+new Date(payload.retrievedAt).toLocaleString('en-GB');
   $('cf-live-content').hidden=false;
   status.textContent='Cloudflare connected · latest successful sync '+new Date(payload.retrievedAt).toLocaleTimeString('en-GB');
  }catch(error){
