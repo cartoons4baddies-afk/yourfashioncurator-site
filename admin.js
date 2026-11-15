@@ -179,7 +179,7 @@ function renderEditorBlocks(){
  }else if(kind==='divider'){
   fields='';
  }else{
-  fields=kind==='image'?'<label>Upload photo<input class="block-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label><label>Image URL<input data-field="url" type="url" value="'+esc(b.url||'')+'" placeholder="https://..."></label><label>Caption (optional)<input data-field="caption" value="'+esc(b.caption||'')+'"></label>':'<label>Text<textarea data-field="text" rows="3">'+esc(b.text||'')+'</textarea></label>';
+  fields=kind==='image'?'<label>Upload photo<input class="block-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label><label>Image URL<input data-field="url" type="url" value="'+esc(b.url||'')+'" placeholder="https://..."></label><label>Caption (optional)<input data-field="caption" value="'+esc(b.caption||'')+'"></label><label>Clickable photo link (optional)<input data-field="linkUrl" type="url" value="'+esc(b.linkUrl||'')+'" placeholder="https://..."></label><p class="hint">Add the product URL to make the photo clickable. Affiliate links are supported; disclose affiliate links in your article.</p>':'<label>Text<textarea data-field="text" rows="3">'+esc(b.text||'')+'</textarea></label>';
   fields+='<div class="block-options"><label>Align<select data-field="align">'+['left','center','right'].map(v=>'<option value="'+v+'" '+(b.align===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label>'+(kind==='image'?'<label>Width<select data-field="width">'+['narrow','wide','full'].map(v=>'<option value="'+v+'" '+(b.width===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label>':'<label>Text size<select data-field="size">'+['small','normal','large'].map(v=>'<option value="'+v+'" '+(b.size===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label>')+'</div>';
  }
  return '<section class="block-edit" data-idx="'+i+'">'+top+fields+'</section>';
@@ -253,6 +253,7 @@ document.querySelectorAll('[data-add]').forEach(btn=>btn.onclick=()=>{
 });
 // Only stickers are draggable; photographs and text remain in normal reading order.
 let dragging=null;
+$('article-preview').addEventListener('click',event=>{if(event.target.closest('.article-photo-link'))event.preventDefault();});
 $('article-preview').addEventListener('pointerdown',event=>{
  const sticker=event.target.closest('[data-sticker-idx]');
  if(!sticker||event.button!==0)return;
