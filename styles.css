@@ -494,3 +494,8 @@ a.yfc-analytics-item:hover strong{text-decoration:underline}
 .shop-folder-rail .shop-product figcaption,.shop-products-grid .shop-product figcaption{font-family:'DM Sans',Arial,sans-serif;font-style:normal;font-weight:500;font-size:clamp(14px,1.6vw,16px);line-height:1.6;letter-spacing:0;text-align:left;color:#3d2836}
 .shop-folder-rail .shop-product figcaption a,.shop-products-grid .shop-product figcaption a{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 @media(max-width:640px){.shop-folder-link{font-size:13px;padding:11px 14px}.shop-folder-rail .shop-product figcaption{font-size:14px}}
+
+/* Optional clickable editorial photo links: keep the existing layout and sizing. */
+.article-visual .article-photo-stage>.article-photo-link{display:block;width:100%;line-height:0;cursor:pointer}
+.article-visual .article-photo-stage>.article-photo-link>img{display:block;width:100%;height:auto;max-width:100%}
+.article-visual .article-photo-stage>.article-photo-link:focus-visible{outline:2px solid #75415b;outline-offset:3px}
