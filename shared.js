@@ -54,7 +54,10 @@ function renderBlocks(blocks=[],options={}){
   const src=cleanUrl(b.url);if(!src)return '';
   const width=['narrow','wide','full'].includes(b.width)?b.width:'wide';
   const target=b.uid||('image-'+i);
-  return '<figure class="article-visual '+width+'" style="'+style+'"><div class="photo-stage article-photo-stage"><img loading="lazy" src="'+src+'" alt="'+esc(b.caption||'')+'">'+stickersFor(all,target,interactive)+'</div>'+(b.caption?'<figcaption>'+esc(b.caption)+'</figcaption>':'')+'</figure>';
+  const href=cleanUrl(b.linkUrl);
+  const image='<img loading="lazy" src="'+src+'" alt="'+esc(b.caption||'')+'">';
+  const photo=href?'<a class="article-photo-link" href="'+href+'" target="_blank" rel="sponsored nofollow noopener noreferrer" aria-label="View '+esc(b.caption||'linked photo')+'">'+image+'</a>':image;
+  return '<figure class="article-visual '+width+'" style="'+style+'"><div class="photo-stage article-photo-stage">'+photo+stickersFor(all,target,interactive)+'</div>'+(b.caption?'<figcaption>'+esc(b.caption)+'</figcaption>':'')+'</figure>';
  }
  return '';
  }).join('');
