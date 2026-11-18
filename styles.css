@@ -499,3 +499,6 @@ a.yfc-analytics-item:hover strong{text-decoration:underline}
 .article-visual .article-photo-stage>.article-photo-link{display:block;width:100%;line-height:0;cursor:pointer}
 .article-visual .article-photo-stage>.article-photo-link>img{display:block;width:100%;height:auto;max-width:100%}
 .article-visual .article-photo-stage>.article-photo-link:focus-visible{outline:2px solid #75415b;outline-offset:3px}
+
+/* THE SHOP: consistently uppercase clickable product descriptions. */
+.shop-product figcaption a{text-transform:uppercase}
