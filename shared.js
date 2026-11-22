@@ -19,9 +19,10 @@ function stickerOverlay(b,i,interactive=false){
 function stickersFor(blocks,target,interactive=false){
  return (Array.isArray(blocks)?blocks:[]).map((b,i)=>b.type==='sticker' && b.anchor===target?stickerOverlay(b,i,interactive):'').join('');
 }
+function photoCredit(value){return value?'<figcaption class="photo-credit">'+esc(value)+'</figcaption>':'';}
 function renderCover(coverUrl,blocks=[],interactive=false){
  const src=cleanUrl(coverUrl);if(!src)return '';
- return '<div class="article-cover-stage photo-stage"><img class="article-cover" src="'+src+'" alt="Cover image">'+stickersFor(blocks,'cover',interactive)+'</div>';
+ const meta=(Array.isArray(blocks)?blocks:[]).find(b=>b.type==='cover-rights')||{};return '<figure class="article-cover-credited"><div class="article-cover-stage photo-stage"><img class="article-cover" src="'+src+'" alt="Cover image">'+stickersFor(blocks,'cover',interactive)+'</div>'+photoCredit(meta.credit)+'</figure>';
 }
 function renderBlocks(blocks=[],options={}){
  const all=Array.isArray(blocks)?blocks:[],interactive=!!options.interactive;
@@ -36,9 +37,9 @@ function renderBlocks(blocks=[],options={}){
  if(kind==='divider')return '<div class="article-divider"></div>';
  if(kind==='sticker')return '';
  if(kind==='diptych'){
-  const images=[['left',b.leftUrl,b.leftCaption],['right',b.rightUrl,b.rightCaption]].map(([side,url,caption])=>{
+  const images=[['left',b.leftUrl,b.leftCaption,b.leftcredit],['right',b.rightUrl,b.rightCaption,b.rightcredit]].map(([side,url,caption,credit])=>{
    const src=cleanUrl(url);if(!src)return '<div class="diptych-empty" aria-hidden="true"></div>';
-   return '<figure class="diptych-photo"><img loading="lazy" src="'+src+'" alt="'+esc(caption||'')+'">'+(caption?'<figcaption>'+esc(caption)+'</figcaption>':'')+'</figure>';
+   return '<figure class="diptych-photo"><img loading="lazy" src="'+src+'" alt="'+esc(caption||'')+'">'+((caption||credit)?'<figcaption>'+[caption,credit].filter(Boolean).map(esc).join(' · ')+'</figcaption>':'')+'</figure>';
   }).join('');
   return '<div class="article-diptych">'+images+'</div>';
  }
@@ -57,7 +58,7 @@ function renderBlocks(blocks=[],options={}){
   const href=cleanUrl(b.linkUrl);
   const image='<img loading="lazy" src="'+src+'" alt="'+esc(b.caption||'')+'">';
   const photo=href?'<a class="article-photo-link" href="'+href+'" target="_blank" rel="sponsored nofollow noopener noreferrer" aria-label="View '+esc(b.caption||'linked photo')+'">'+image+'</a>':image;
-  return '<figure class="article-visual '+width+'" style="'+style+'"><div class="photo-stage article-photo-stage">'+photo+stickersFor(all,target,interactive)+'</div>'+(b.caption?'<figcaption>'+esc(b.caption)+'</figcaption>':'')+'</figure>';
+  return '<figure class="article-visual '+width+'" style="'+style+'"><div class="photo-stage article-photo-stage">'+photo+stickersFor(all,target,interactive)+'</div>'+((b.caption||b.credit)?'<figcaption>'+[b.caption,b.credit].filter(Boolean).map(esc).join(' · ')+'</figcaption>':'')+'</figure>';
  }
  return '';
  }).join('');
